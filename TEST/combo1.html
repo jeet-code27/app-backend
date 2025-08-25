@@ -1,0 +1,2580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Combo Management System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4a6cf7;
+            --secondary-color: #6c757d;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f7ff;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        /* Header Styles */
+        header {
+            background-color: white;
+            box-shadow: var(--box-shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+
+        nav ul li {
+            margin-left: 20px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: var(--dark-color);
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        nav ul li a:hover {
+            color: var(--primary-color);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 8px 16px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: var(--transition);
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background-color: #3a5bd9;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+        }
+
+        /* Main Content */
+        main {
+            padding: 30px 0;
+            min-height: calc(100vh - 150px);
+        }
+
+        .page-title {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: var(--dark-color);
+        }
+
+        /* API Configuration */
+        .api-config {
+            background-color: #fff3cd;
+            border: 1px solid #ffeeba;
+            border-radius: var(--border-radius);
+            padding: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .api-config i {
+            color: var(--warning-color);
+            margin-right: 10px;
+            font-size: 20px;
+        }
+
+        .api-config input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            margin-right: 10px;
+        }
+
+        .api-config button {
+            padding: 8px 16px;
+            background-color: var(--warning-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+        }
+
+        /* Search and Filter Section */
+        .search-filter-section {
+            background-color: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 30px;
+        }
+
+        .search-filter-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 40px 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 14px;
+        }
+
+        .search-box button {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--secondary-color);
+            cursor: pointer;
+        }
+
+        .filter-select {
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 14px;
+            background-color: white;
+        }
+
+        /* Combo Cards */
+        .combos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .combo-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+        }
+
+        .combo-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .combo-image {
+            height: 200px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .combo-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .combo-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .badge-featured {
+            background-color: var(--warning-color);
+        }
+
+        .badge-popular {
+            background-color: var(--danger-color);
+        }
+
+        .combo-content {
+            padding: 20px;
+        }
+
+        .combo-title {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: var(--dark-color);
+        }
+
+        .combo-description {
+            font-size: 14px;
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .combo-pricing {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .combo-price {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .combo-original-price {
+            font-size: 16px;
+            color: var(--secondary-color);
+            text-decoration: line-through;
+            margin-left: 10px;
+        }
+
+        .combo-discount {
+            font-size: 14px;
+            background-color: var(--danger-color);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-left: 10px;
+        }
+
+        .combo-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            color: var(--secondary-color);
+        }
+
+        .combo-actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Combo Detail */
+        .combo-detail {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+        }
+
+        .combo-detail-header {
+            position: relative;
+            height: 300px;
+            overflow: hidden;
+        }
+
+        .combo-detail-header img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .combo-detail-content {
+            padding: 30px;
+        }
+
+        .combo-detail-title {
+            font-size: 28px;
+            margin-bottom: 15px;
+            color: var(--dark-color);
+        }
+
+        .combo-detail-description {
+            font-size: 16px;
+            color: var(--secondary-color);
+            margin-bottom: 25px;
+            line-height: 1.7;
+        }
+
+        .combo-detail-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .info-icon {
+            width: 40px;
+            height: 40px;
+            background-color: rgba(74, 108, 247, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: var(--primary-color);
+        }
+
+        .info-content h4 {
+            font-size: 14px;
+            color: var(--secondary-color);
+            margin-bottom: 5px;
+        }
+
+        .info-content p {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--dark-color);
+        }
+
+        .combo-services {
+            margin-top: 30px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: var(--dark-color);
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .services-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .service-item {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: var(--border-radius);
+        }
+
+        .service-name {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .service-quantity {
+            font-size: 14px;
+            color: var(--secondary-color);
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .pagination button {
+            padding: 8px 12px;
+            margin: 0 5px;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .pagination button:hover {
+            background-color: #f8f9fa;
+        }
+
+        .pagination button.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 50px auto;
+            padding: 0;
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 500;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--secondary-color);
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 14px;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.1);
+        }
+
+        textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .image-upload {
+            border: 2px dashed #ddd;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .image-upload:hover {
+            border-color: var(--primary-color);
+        }
+
+        .image-upload.dragover {
+            background-color: rgba(74, 108, 247, 0.05);
+            border-color: var(--primary-color);
+        }
+
+        .image-preview {
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .image-preview img {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: var(--border-radius);
+        }
+
+        .services-container {
+            margin-top: 15px;
+        }
+
+        .service-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: var(--border-radius);
+            margin-bottom: 10px;
+        }
+
+        .service-item select {
+            flex: 1;
+            margin-right: 10px;
+        }
+
+        .service-item input {
+            width: 80px;
+            margin-right: 10px;
+        }
+
+        .service-item button {
+            background: none;
+            border: none;
+            color: var(--danger-color);
+            cursor: pointer;
+        }
+
+        .modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        /* Toast Notification */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 2000;
+        }
+
+        .toast {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            min-width: 300px;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .toast-success {
+            border-left: 4px solid var(--success-color);
+        }
+
+        .toast-error {
+            border-left: 4px solid var(--danger-color);
+        }
+
+        .toast-warning {
+            border-left: 4px solid var(--warning-color);
+        }
+
+        .toast-icon {
+            margin-right: 15px;
+            font-size: 20px;
+        }
+
+        .toast-success .toast-icon {
+            color: var(--success-color);
+        }
+
+        .toast-error .toast-icon {
+            color: var(--danger-color);
+        }
+
+        .toast-warning .toast-icon {
+            color: var(--warning-color);
+        }
+
+        .toast-message {
+            flex: 1;
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            color: var(--secondary-color);
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            color: var(--secondary-color);
+            margin-bottom: 20px;
+        }
+
+        .empty-state-title {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: var(--dark-color);
+        }
+
+        .empty-state-description {
+            color: var(--secondary-color);
+            margin-bottom: 30px;
+        }
+
+        /* Demo Data Section */
+        .demo-section {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .demo-section h3 {
+            margin-bottom: 15px;
+            color: #0c5460;
+        }
+
+        .demo-section p {
+            margin-bottom: 15px;
+            color: #0c5460;
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--dark-color);
+            color: white;
+            padding: 30px 0;
+            text-align: center;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+            }
+
+            nav ul {
+                margin-top: 15px;
+            }
+
+            .combos-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+
+            .combo-detail-info {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                flex-direction: column;
+            }
+
+            .modal-content {
+                margin: 20px auto;
+                width: 95%;
+            }
+
+            .api-config {
+                flex-direction: column;
+            }
+
+            .api-config input {
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-container">
+                <div class="logo">ComboHub</div>
+                <nav>
+                    <ul>
+                        <li><a href="#" onclick="showCombos()">All Combos</a></li>
+                        <li><a href="#" onclick="showFeaturedCombos()">Featured</a></li>
+                        <li><a href="#" onclick="showPopularCombos()">Popular</a></li>
+                        <li><a href="#" onclick="showAdminPanel()">Admin</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <div class="container">
+            <!-- API Configuration -->
+            <div class="api-config">
+                <i class="fas fa-exclamation-triangle"></i>
+                <input type="text" id="apiUrl" placeholder="Enter API URL (e.g., http://localhost:5000/api)" value="http://localhost:5000/api">
+                <button onclick="updateApiUrl()">Update API</button>
+            </div>
+
+            <!-- Demo Data Section -->
+            <div class="demo-section" id="demoSection">
+                <h3>Backend Not Connected</h3>
+                <p>The application is currently running in demo mode because it cannot connect to the backend API.</p>
+                <p>Please make sure your backend server is running and update the API URL above.</p>
+                <button class="btn" onclick="loadDemoData()">Load Demo Data</button>
+            </div>
+
+            <!-- Page Title -->
+            <h1 class="page-title" id="pageTitle">All Combos</h1>
+
+            <!-- Search and Filter Section -->
+            <div class="search-filter-section" id="searchFilterSection" style="display: none;">
+                <div class="search-filter-container">
+                    <div class="search-box">
+                        <input type="text" id="searchInput" placeholder="Search combos...">
+                        <button onclick="searchCombos()"><i class="fas fa-search"></i></button>
+                    </div>
+                    <select class="filter-select" id="categoryFilter" onchange="filterByCategory()" style="display: none;">
+                        <option value="">All Categories</option>
+                    </select>
+                    <button class="btn" onclick="resetFilters()">Reset</button>
+                    <button class="btn btn-success" id="addComboBtn" onclick="showAddComboModal()" style="display: none;">
+                        <i class="fas fa-plus"></i> Add Combo
+                    </button>
+                </div>
+            </div>
+
+            <!-- Combos Grid -->
+            <div class="combos-grid" id="combosGrid" style="display: none;">
+                <!-- Combo cards will be dynamically inserted here -->
+            </div>
+
+            <!-- Combo Detail View (Hidden by default) -->
+            <div class="combo-detail" id="comboDetail" style="display: none;">
+                <!-- Combo detail will be dynamically inserted here -->
+            </div>
+
+            <!-- Loading Spinner -->
+            <div class="loading-container" id="loadingSpinner" style="display: none;">
+                <div class="spinner"></div>
+            </div>
+
+            <!-- Empty State -->
+            <div class="empty-state" id="emptyState" style="display: none;">
+                <div class="empty-state-icon">
+                    <i class="fas fa-box-open"></i>
+                </div>
+                <h2 class="empty-state-title">No combos found</h2>
+                <p class="empty-state-description">Try adjusting your search or filter criteria</p>
+                <button class="btn" onclick="resetFilters()">Reset Filters</button>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination" id="pagination" style="display: none;">
+                <!-- Pagination buttons will be dynamically inserted here -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2023 ComboHub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Add/Edit Combo Modal -->
+    <div class="modal" id="comboModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">Add New Combo</h3>
+                <button class="modal-close" onclick="closeComboModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="comboForm">
+                    <input type="hidden" id="comboId">
+                    
+                    <div class="form-group">
+                        <label for="title">Title *</label>
+                        <input type="text" class="form-control" id="title" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="description">Description *</label>
+                        <textarea class="form-control" id="description" required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="shortDescription">Short Description</label>
+                        <textarea class="form-control" id="shortDescription"></textarea>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="originalPrice">Original Price *</label>
+                            <input type="number" class="form-control" id="originalPrice" min="0" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="discountedPrice">Discounted Price *</label>
+                            <input type="number" class="form-control" id="discountedPrice" min="0" step="0.01" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="deliveryTimeValue">Delivery Time *</label>
+                            <input type="number" class="form-control" id="deliveryTimeValue" min="1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="deliveryTimeUnit">Unit</label>
+                            <select class="form-control" id="deliveryTimeUnit">
+                                <option value="days">Days</option>
+                                <option value="weeks">Weeks</option>
+                                <option value="months">Months</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Services *</label>
+                        <div class="services-container" id="servicesContainer">
+                            <div class="service-item">
+                                <select class="form-control service-select">
+                                    <option value="">Select a service</option>
+                                </select>
+                                <input type="number" class="form-control" min="1" value="1" placeholder="Qty">
+                                <button type="button" onclick="removeService(this)"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-outline" onclick="addService()">
+                            <i class="fas fa-plus"></i> Add Service
+                        </button>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="features">Features (comma separated)</label>
+                        <input type="text" class="form-control" id="features" placeholder="Feature 1, Feature 2, Feature 3">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="tags">Tags (comma separated)</label>
+                        <input type="text" class="form-control" id="tags" placeholder="Tag 1, Tag 2, Tag 3">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="isFeatured"> Featured
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="isPopular"> Popular
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="isActive" checked> Active
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="sortOrder">Sort Order</label>
+                        <input type="number" class="form-control" id="sortOrder" min="0" value="0">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="alt">Image Alt Text</label>
+                        <input type="text" class="form-control" id="alt">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Image</label>
+                        <div class="image-upload" id="imageUpload">
+                            <i class="fas fa-cloud-upload-alt" style="font-size: 48px; color: #ddd; margin-bottom: 10px;"></i>
+                            <p>Click or drag image here to upload</p>
+                            <input type="file" id="imageInput" accept="image/*" style="display: none;">
+                        </div>
+                        <div class="image-preview" id="imagePreview"></div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="closeComboModal()">Cancel</button>
+                <button type="button" class="btn" id="saveComboBtn" onclick="saveCombo()">
+                    <span id="saveBtnText">Save Combo</span>
+                    <span id="saveBtnSpinner" class="spinner" style="display: none;"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        // API Base URL - Updated to use port 5000 based on your .env file
+        let API_BASE_URL = 'http://localhost:5000/api';
+        
+        // Global variables
+        let currentPage = 1;
+        let currentLimit = 9;
+        let totalPages = 1;
+        let currentView = 'all'; // 'all', 'featured', 'popular', 'category', 'search'
+        let currentCategoryId = null;
+        let currentSearchTerm = null;
+        let services = [];
+        let categories = [];
+        let isDemoMode = true;
+        
+        // Demo data
+        const demoCombos = [
+            {
+                _id: '1',
+                title: 'Web Development Starter Pack',
+                description: 'Get your professional website up and running with our comprehensive web development package. Includes design, development, and basic SEO optimization.',
+                shortDescription: 'Complete web development solution for startups and small businesses.',
+                services: [
+                    { service: { _id: '101', title: 'Website Design' }, quantity: 1 },
+                    { service: { _id: '102', title: 'Frontend Development' }, quantity: 1 },
+                    { service: { _id: '103', title: 'Basic SEO' }, quantity: 1 }
+                ],
+                pricing: {
+                    originalPrice: 25000,
+                    discountedPrice: 19999,
+                    currency: 'INR'
+                },
+                deliveryTime: {
+                    value: 15,
+                    unit: 'days'
+                },
+                features: [
+                    'Responsive Design',
+                    'SEO Friendly',
+                    'Cross-browser Compatibility',
+                    'Basic Analytics Setup'
+                ],
+                tags: ['web', 'development', 'design', 'seo'],
+                image: {
+                    url: 'https://picsum.photos/seed/web-dev/400/300.jpg',
+                    alt: 'Web Development'
+                },
+                isActive: true,
+                isFeatured: true,
+                isPopular: true,
+                views: 245,
+                orders: 32,
+                sortOrder: 1
+            },
+            {
+                _id: '2',
+                title: 'E-commerce Solution',
+                description: 'Complete e-commerce solution with product catalog, shopping cart, payment integration, and order management system.',
+                shortDescription: 'Turnkey e-commerce platform for online businesses.',
+                services: [
+                    { service: { _id: '201', title: 'E-commerce Platform Setup' }, quantity: 1 },
+                    { service: { _id: '202', title: 'Payment Gateway Integration' }, quantity: 1 },
+                    { service: { _id: '203', title: 'Product Catalog Setup' }, quantity: 1 }
+                ],
+                pricing: {
+                    originalPrice: 50000,
+                    discountedPrice: 39999,
+                    currency: 'INR'
+                },
+                deliveryTime: {
+                    value: 30,
+                    unit: 'days'
+                },
+                features: [
+                    'Secure Payment Processing',
+                    'Inventory Management',
+                    'Order Tracking',
+                    'Customer Dashboard'
+                ],
+                tags: ['ecommerce', 'online store', 'shopping cart', 'payment'],
+                image: {
+                    url: 'https://picsum.photos/seed/ecommerce/400/300.jpg',
+                    alt: 'E-commerce Solution'
+                },
+                isActive: true,
+                isFeatured: true,
+                isPopular: false,
+                views: 187,
+                orders: 18,
+                sortOrder: 2
+            },
+            {
+                _id: '3',
+                title: 'Mobile App Development',
+                description: 'Custom mobile application development for iOS and Android platforms with modern UI/UX design and robust backend.',
+                shortDescription: 'Native and cross-platform mobile app development services.',
+                services: [
+                    { service: { _id: '301', title: 'Mobile App Design' }, quantity: 1 },
+                    { service: { _id: '302', title: 'App Development' }, quantity: 1 },
+                    { service: { _id: '303', title: 'App Store Submission' }, quantity: 1 }
+                ],
+                pricing: {
+                    originalPrice: 75000,
+                    discountedPrice: 59999,
+                    currency: 'INR'
+                },
+                deliveryTime: {
+                    value: 45,
+                    unit: 'days'
+                },
+                features: [
+                    'Cross-platform Compatibility',
+                    'Modern UI/UX',
+                    'Push Notifications',
+                    'Analytics Integration'
+                ],
+                tags: ['mobile', 'app', 'ios', 'android'],
+                image: {
+                    url: 'https://picsum.photos/seed/mobile-app/400/300.jpg',
+                    alt: 'Mobile App Development'
+                },
+                isActive: true,
+                isFeatured: false,
+                isPopular: true,
+                views: 312,
+                orders: 24,
+                sortOrder: 3
+            },
+            {
+                _id: '4',
+                title: 'Digital Marketing Bundle',
+                description: 'Comprehensive digital marketing package including SEO, social media marketing, content creation, and PPC advertising.',
+                shortDescription: 'All-in-one digital marketing solution to boost your online presence.',
+                services: [
+                    { service: { _id: '401', title: 'SEO Optimization' }, quantity: 1 },
+                    { service: { _id: '402', title: 'Social Media Marketing' }, quantity: 1 },
+                    { service: { _id: '403', title: 'Content Creation' }, quantity: 1 }
+                ],
+                pricing: {
+                    originalPrice: 35000,
+                    discountedPrice: 27999,
+                    currency: 'INR'
+                },
+                deliveryTime: {
+                    value: 30,
+                    unit: 'days'
+                },
+                features: [
+                    'Keyword Research',
+                    'Competitor Analysis',
+                    'Monthly Reports',
+                    'Dedicated Account Manager'
+                ],
+                tags: ['marketing', 'seo', 'social media', 'ppc'],
+                image: {
+                    url: 'https://picsum.photos/seed/marketing/400/300.jpg',
+                    alt: 'Digital Marketing'
+                },
+                isActive: true,
+                isFeatured: true,
+                isPopular: false,
+                views: 156,
+                orders: 15,
+                sortOrder: 4
+            },
+            {
+                _id: '5',
+                title: 'Brand Identity Package',
+                description: 'Complete brand identity solution including logo design, brand guidelines, business cards, and letterhead design.',
+                shortDescription: 'Professional brand identity design for businesses of all sizes.',
+                services: [
+                    { service: { _id: '501', title: 'Logo Design' }, quantity: 1 },
+                    { service: { _id: '502', title: 'Brand Guidelines' }, quantity: 1 },
+                    { service: { _id: '503', title: 'Business Card Design' }, quantity: 1 }
+                ],
+                pricing: {
+                    originalPrice: 20000,
+                    discountedPrice: 14999,
+                    currency: 'INR'
+                },
+                deliveryTime: {
+                    value: 10,
+                    unit: 'days'
+                },
+                features: [
+                    '3 Logo Concepts',
+                    'Unlimited Revisions',
+                    'Brand Color Palette',
+                    'Typography Guidelines'
+                ],
+                tags: ['branding', 'logo', 'design', 'identity'],
+                image: {
+                    url: 'https://picsum.photos/seed/branding/400/300.jpg',
+                    alt: 'Brand Identity'
+                },
+                isActive: true,
+                isFeatured: false,
+                isPopular: true,
+                views: 203,
+                orders: 28,
+                sortOrder: 5
+            },
+            {
+                _id: '6',
+                title: 'Content Creation Package',
+                description: 'Professional content creation services including blog posts, social media content, and website copywriting.',
+                shortDescription: 'High-quality content creation to engage your audience.',
+                services: [
+                    { service: { _id: '601', title: 'Blog Writing' }, quantity: 1 },
+                    { service: { _id: '602', title: 'Social Media Content' }, quantity: 1 },
+                    { service: { _id: '603', title: 'Website Copywriting' }, quantity: 1 }
+                ],
+                pricing: {
+                    originalPrice: 18000,
+                    discountedPrice: 13999,
+                    currency: 'INR'
+                },
+                deliveryTime: {
+                    value: 15,
+                    unit: 'days'
+                },
+                features: [
+                    'SEO Optimized Content',
+                    'Professional Writers',
+                    'Content Strategy',
+                    'Monthly Content Calendar'
+                ],
+                tags: ['content', 'writing', 'blog', 'copywriting'],
+                image: {
+                    url: 'https://picsum.photos/seed/content/400/300.jpg',
+                    alt: 'Content Creation'
+                },
+                isActive: true,
+                isFeatured: false,
+                isPopular: false,
+                views: 98,
+                orders: 12,
+                sortOrder: 6
+            }
+        ];
+        
+        const demoServices = [
+            { _id: '101', title: 'Website Design' },
+            { _id: '102', title: 'Frontend Development' },
+            { _id: '103', title: 'Basic SEO' },
+            { _id: '201', title: 'E-commerce Platform Setup' },
+            { _id: '202', title: 'Payment Gateway Integration' },
+            { _id: '203', title: 'Product Catalog Setup' },
+            { _id: '301', title: 'Mobile App Design' },
+            { _id: '302', title: 'App Development' },
+            { _id: '303', title: 'App Store Submission' },
+            { _id: '401', title: 'SEO Optimization' },
+            { _id: '402', title: 'Social Media Marketing' },
+            { _id: '403', title: 'Content Creation' },
+            { _id: '501', title: 'Logo Design' },
+            { _id: '502', title: 'Brand Guidelines' },
+            { _id: '503', title: 'Business Card Design' },
+            { _id: '601', title: 'Blog Writing' },
+            { _id: '602', title: 'Social Media Content' },
+            { _id: '603', title: 'Website Copywriting' }
+        ];
+        
+        const demoCategories = [
+            { _id: 'cat1', title: 'Web Development' },
+            { _id: 'cat2', title: 'E-commerce' },
+            { _id: 'cat3', title: 'Mobile Apps' },
+            { _id: 'cat4', title: 'Marketing' },
+            { _id: 'cat5', title: 'Design' }
+        ];
+        
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                fetchServices();
+                fetchCategories();
+                showCombos();
+                
+                // Setup image upload
+                const imageUpload = document.getElementById('imageUpload');
+                const imageInput = document.getElementById('imageInput');
+                
+                imageUpload.addEventListener('click', () => imageInput.click());
+                
+                imageUpload.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    imageUpload.classList.add('dragover');
+                });
+                
+                imageUpload.addEventListener('dragleave', () => {
+                    imageUpload.classList.remove('dragover');
+                });
+                
+                imageUpload.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    imageUpload.classList.remove('dragover');
+                    
+                    if (e.dataTransfer.files.length) {
+                        handleImageUpload(e.dataTransfer.files[0]);
+                    }
+                });
+                
+                imageInput.addEventListener('change', (e) => {
+                    if (e.target.files.length) {
+                        handleImageUpload(e.target.files[0]);
+                    }
+                });
+            } catch (error) {
+                console.error('Initialization error:', error);
+                showToast('Application initialization failed. Please refresh the page.', 'error');
+            }
+        });
+        
+        // Update API URL
+        function updateApiUrl() {
+            const newUrl = document.getElementById('apiUrl').value.trim();
+            if (newUrl) {
+                API_BASE_URL = newUrl;
+                showToast('API URL updated. Please refresh the page.', 'success');
+            } else {
+                showToast('Please enter a valid API URL', 'warning');
+            }
+        }
+        
+        // Load demo data
+        function loadDemoData() {
+            isDemoMode = true;
+            services = [...demoServices];
+            categories = [...demoCategories];
+            
+            // Update service selects in the form
+            const serviceSelects = document.querySelectorAll('.service-select');
+            serviceSelects.forEach(select => {
+                select.innerHTML = '<option value="">Select a service</option>';
+                services.forEach(service => {
+                    const option = document.createElement('option');
+                    option.value = service._id;
+                    option.textContent = service.title;
+                    select.appendChild(option);
+                });
+            });
+            
+            // Update category filter
+            const categoryFilter = document.getElementById('categoryFilter');
+            categoryFilter.innerHTML = '<option value="">All Categories</option>';
+            categories.forEach(category => {
+                const option = document.createElement('option');
+                option.value = category._id;
+                option.textContent = category.title;
+                categoryFilter.appendChild(option);
+            });
+            
+            // Hide demo section and show app
+            document.getElementById('demoSection').style.display = 'none';
+            document.getElementById('searchFilterSection').style.display = 'block';
+            document.getElementById('combosGrid').style.display = 'grid';
+            document.getElementById('pagination').style.display = 'flex';
+            document.getElementById('categoryFilter').style.display = 'block';
+            
+            // Load demo combos
+            displayCombos(demoCombos);
+            showToast('Demo data loaded successfully', 'success');
+        }
+        
+        // Fetch services from API
+        async function fetchServices() {
+            if (isDemoMode) return;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/services`);
+                if (!response.ok) throw new Error('Failed to fetch services');
+                
+                services = await response.json();
+                
+                // Update service selects in the form
+                const serviceSelects = document.querySelectorAll('.service-select');
+                serviceSelects.forEach(select => {
+                    select.innerHTML = '<option value="">Select a service</option>';
+                    services.forEach(service => {
+                        const option = document.createElement('option');
+                        option.value = service._id;
+                        option.textContent = service.title;
+                        select.appendChild(option);
+                    });
+                });
+                
+                // Hide demo section and show app
+                document.getElementById('demoSection').style.display = 'none';
+                document.getElementById('searchFilterSection').style.display = 'block';
+                document.getElementById('combosGrid').style.display = 'grid';
+                document.getElementById('pagination').style.display = 'flex';
+                document.getElementById('categoryFilter').style.display = 'block';
+            } catch (error) {
+                console.error('Error fetching services:', error);
+                // Don't show toast for this error as it's expected when backend is not running
+            }
+        }
+        
+        // Fetch categories from API
+        async function fetchCategories() {
+            if (isDemoMode) return;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/categories`);
+                if (!response.ok) throw new Error('Failed to fetch categories');
+                
+                categories = await response.json();
+                
+                // Update category filter
+                const categoryFilter = document.getElementById('categoryFilter');
+                categoryFilter.innerHTML = '<option value="">All Categories</option>';
+                categories.forEach(category => {
+                    const option = document.createElement('option');
+                    option.value = category._id;
+                    option.textContent = category.title;
+                    categoryFilter.appendChild(option);
+                });
+                
+                // Show category filter
+                document.getElementById('categoryFilter').style.display = 'block';
+            } catch (error) {
+                console.error('Error fetching categories:', error);
+                // Don't show toast for this error as it's expected when backend is not running
+            }
+        }
+        
+        // Show all combos
+        function showCombos() {
+            currentView = 'all';
+            currentCategoryId = null;
+            currentSearchTerm = null;
+            currentPage = 1;
+            
+            document.getElementById('pageTitle').textContent = 'All Combos';
+            document.getElementById('searchFilterSection').style.display = 'block';
+            document.getElementById('combosGrid').style.display = 'grid';
+            document.getElementById('comboDetail').style.display = 'none';
+            document.getElementById('addComboBtn').style.display = 'none';
+            document.getElementById('pagination').style.display = 'flex';
+            
+            if (isDemoMode) {
+                displayCombos(demoCombos);
+                document.getElementById('pagination').innerHTML = '';
+            } else {
+                fetchCombos();
+            }
+        }
+        
+        // Show featured combos
+        function showFeaturedCombos() {
+            currentView = 'featured';
+            currentCategoryId = null;
+            currentSearchTerm = null;
+            currentPage = 1;
+            
+            document.getElementById('pageTitle').textContent = 'Featured Combos';
+            document.getElementById('searchFilterSection').style.display = 'block';
+            document.getElementById('combosGrid').style.display = 'grid';
+            document.getElementById('comboDetail').style.display = 'none';
+            document.getElementById('addComboBtn').style.display = 'none';
+            document.getElementById('pagination').style.display = 'flex';
+            
+            if (isDemoMode) {
+                const featuredCombos = demoCombos.filter(combo => combo.isFeatured);
+                displayCombos(featuredCombos);
+                document.getElementById('pagination').innerHTML = '';
+            } else {
+                fetchFeaturedCombos();
+            }
+        }
+        
+        // Show popular combos
+        function showPopularCombos() {
+            currentView = 'popular';
+            currentCategoryId = null;
+            currentSearchTerm = null;
+            currentPage = 1;
+            
+            document.getElementById('pageTitle').textContent = 'Popular Combos';
+            document.getElementById('searchFilterSection').style.display = 'block';
+            document.getElementById('combosGrid').style.display = 'grid';
+            document.getElementById('comboDetail').style.display = 'none';
+            document.getElementById('addComboBtn').style.display = 'none';
+            document.getElementById('pagination').style.display = 'flex';
+            
+            if (isDemoMode) {
+                const popularCombos = demoCombos.filter(combo => combo.isPopular);
+                displayCombos(popularCombos);
+                document.getElementById('pagination').innerHTML = '';
+            } else {
+                fetchPopularCombos();
+            }
+        }
+        
+        // Show admin panel
+        function showAdminPanel() {
+            document.getElementById('pageTitle').textContent = 'Admin Panel';
+            document.getElementById('searchFilterSection').style.display = 'block';
+            document.getElementById('combosGrid').style.display = 'grid';
+            document.getElementById('comboDetail').style.display = 'none';
+            document.getElementById('addComboBtn').style.display = 'inline-block';
+            document.getElementById('pagination').style.display = 'flex';
+            
+            currentView = 'all';
+            currentCategoryId = null;
+            currentSearchTerm = null;
+            currentPage = 1;
+            
+            if (isDemoMode) {
+                displayCombos(demoCombos);
+                document.getElementById('pagination').innerHTML = '';
+            } else {
+                fetchCombos();
+            }
+        }
+        
+        // Fetch combos from API
+        async function fetchCombos() {
+            if (isDemoMode) return;
+            
+            showLoading();
+            
+            try {
+                let url = `${API_BASE_URL}/combos?page=${currentPage}&limit=${currentLimit}`;
+                
+                if (currentView === 'category' && currentCategoryId) {
+                    url = `${API_BASE_URL}/combos/category/${currentCategoryId}?page=${currentPage}&limit=${currentLimit}`;
+                } else if (currentView === 'search' && currentSearchTerm) {
+                    url = `${API_BASE_URL}/combos?search=${encodeURIComponent(currentSearchTerm)}&page=${currentPage}&limit=${currentLimit}`;
+                }
+                
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('Failed to fetch combos');
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayCombos(data.data);
+                    totalPages = Math.ceil(data.pagination.totalItems / currentLimit);
+                    renderPagination(data.pagination);
+                    
+                    if (data.data.length === 0) {
+                        showEmptyState();
+                    } else {
+                        hideEmptyState();
+                    }
+                    
+                    // Hide demo section and show app
+                    document.getElementById('demoSection').style.display = 'none';
+                    document.getElementById('searchFilterSection').style.display = 'block';
+                    document.getElementById('combosGrid').style.display = 'grid';
+                    document.getElementById('pagination').style.display = 'flex';
+                } else {
+                    throw new Error(data.message || 'Failed to fetch combos');
+                }
+            } catch (error) {
+                showToast('Error fetching combos. Please check your API connection.', 'error');
+                console.error('Error fetching combos:', error);
+                showEmptyState();
+            } finally {
+                hideLoading();
+            }
+        }
+        
+        // Fetch featured combos
+        async function fetchFeaturedCombos() {
+            if (isDemoMode) return;
+            
+            showLoading();
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/combos/featured?limit=${currentLimit}`);
+                if (!response.ok) throw new Error('Failed to fetch featured combos');
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayCombos(data.data);
+                    document.getElementById('pagination').innerHTML = '';
+                    
+                    if (data.data.length === 0) {
+                        showEmptyState();
+                    } else {
+                        hideEmptyState();
+                    }
+                } else {
+                    throw new Error(data.message || 'Failed to fetch featured combos');
+                }
+            } catch (error) {
+                showToast('Error fetching featured combos. Please check your API connection.', 'error');
+                console.error('Error fetching featured combos:', error);
+                showEmptyState();
+            } finally {
+                hideLoading();
+            }
+        }
+        
+        // Fetch popular combos
+        async function fetchPopularCombos() {
+            if (isDemoMode) return;
+            
+            showLoading();
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/combos/popular?limit=${currentLimit}`);
+                if (!response.ok) throw new Error('Failed to fetch popular combos');
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayCombos(data.data);
+                    document.getElementById('pagination').innerHTML = '';
+                    
+                    if (data.data.length === 0) {
+                        showEmptyState();
+                    } else {
+                        hideEmptyState();
+                    }
+                } else {
+                    throw new Error(data.message || 'Failed to fetch popular combos');
+                }
+            } catch (error) {
+                showToast('Error fetching popular combos. Please check your API connection.', 'error');
+                console.error('Error fetching popular combos:', error);
+                showEmptyState();
+            } finally {
+                hideLoading();
+            }
+        }
+        
+        // Display combos in the grid
+        function displayCombos(combos) {
+            const combosGrid = document.getElementById('combosGrid');
+            combosGrid.innerHTML = '';
+            
+            combos.forEach(combo => {
+                const card = createComboCard(combo);
+                combosGrid.appendChild(card);
+            });
+        }
+        
+        // Create a combo card element
+        function createComboCard(combo) {
+            const card = document.createElement('div');
+            card.className = 'combo-card';
+            
+            // Calculate discount percentage
+            const discountPercentage = combo.pricing.originalPrice > 0 
+                ? Math.round(((combo.pricing.originalPrice - combo.pricing.discountedPrice) / combo.pricing.originalPrice) * 100)
+                : 0;
+            
+            // Format delivery time
+            const deliveryTime = `${combo.deliveryTime.value} ${combo.deliveryTime.unit}`;
+            
+            // Create badges
+            let badgesHtml = '';
+            if (combo.isFeatured) {
+                badgesHtml += `<span class="combo-badge badge-featured">Featured</span>`;
+            }
+            if (combo.isPopular) {
+                badgesHtml += `<span class="combo-badge badge-popular">Popular</span>`;
+            }
+            
+            // Create admin actions if in admin view
+            const isAdminView = document.getElementById('addComboBtn').style.display !== 'none';
+            let adminActionsHtml = '';
+            
+            if (isAdminView) {
+                adminActionsHtml = `
+                    <div class="combo-actions">
+                        <button class="btn btn-outline" onclick="showEditComboModal('${combo._id}')">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="btn btn-outline" onclick="toggleComboActive('${combo._id}', ${combo.isActive})">
+                            <i class="fas fa-power-off"></i> ${combo.isActive ? 'Deactivate' : 'Activate'}
+                        </button>
+                        <button class="btn btn-danger" onclick="deleteCombo('${combo._id}')">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                `;
+            }
+            
+            card.innerHTML = `
+                <div class="combo-image">
+                    <img src="${combo.image?.url || 'https://picsum.photos/seed/combo/400/300.jpg'}" alt="${combo.image?.alt || combo.title}">
+                    ${badgesHtml}
+                </div>
+                <div class="combo-content">
+                    <h3 class="combo-title">${combo.title}</h3>
+                    <p class="combo-description">${combo.shortDescription || combo.description.substring(0, 100) + '...'}</p>
+                    <div class="combo-pricing">
+                        <span class="combo-price">₹${combo.pricing.discountedPrice}</span>
+                        ${combo.pricing.originalPrice !== combo.pricing.discountedPrice 
+                            ? `<span class="combo-original-price">₹${combo.pricing.originalPrice}</span>` 
+                            : ''}
+                        ${discountPercentage > 0 ? `<span class="combo-discount">${discountPercentage}% OFF</span>` : ''}
+                    </div>
+                    <div class="combo-meta">
+                        <span><i class="fas fa-clock"></i> ${deliveryTime}</span>
+                        <span><i class="fas fa-eye"></i> ${combo.views}</span>
+                    </div>
+                    <div class="combo-actions">
+                        <button class="btn" onclick="showComboDetail('${combo._id}')">
+                            <i class="fas fa-info-circle"></i> View Details
+                        </button>
+                        ${adminActionsHtml}
+                    </div>
+                </div>
+            `;
+            
+            return card;
+        }
+        
+        // Show combo detail view
+        function showComboDetail(comboId) {
+            let combo;
+            
+            if (isDemoMode) {
+                combo = demoCombos.find(c => c._id === comboId);
+                if (!combo) {
+                    showToast('Combo not found', 'error');
+                    return;
+                }
+                
+                // Increment views
+                combo.views += 1;
+            } else {
+                showLoading();
+                
+                // Fetch combo details from API
+                fetch(`${API_BASE_URL}/combos/${comboId}`)
+                    .then(response => {
+                        if (!response.ok) throw new Error('Failed to fetch combo details');
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            combo = data.data;
+                            renderComboDetail(combo);
+                        } else {
+                            throw new Error(data.message || 'Failed to fetch combo details');
+                        }
+                    })
+                    .catch(error => {
+                        showToast('Error fetching combo details', 'error');
+                        console.error('Error fetching combo details:', error);
+                    })
+                    .finally(() => {
+                        hideLoading();
+                    });
+                
+                return;
+            }
+            
+            renderComboDetail(combo);
+        }
+        
+        // Render combo detail view
+        function renderComboDetail(combo) {
+            document.getElementById('combosGrid').style.display = 'none';
+            document.getElementById('comboDetail').style.display = 'block';
+            document.getElementById('pagination').style.display = 'none';
+            
+            // Calculate discount percentage
+            const discountPercentage = combo.pricing.originalPrice > 0 
+                ? Math.round(((combo.pricing.originalPrice - combo.pricing.discountedPrice) / combo.pricing.originalPrice) * 100)
+                : 0;
+            
+            // Format delivery time
+            const deliveryTime = `${combo.deliveryTime.value} ${combo.deliveryTime.unit}`;
+            
+            // Create badges
+            let badgesHtml = '';
+            if (combo.isFeatured) {
+                badgesHtml += `<span class="combo-badge badge-featured">Featured</span>`;
+            }
+            if (combo.isPopular) {
+                badgesHtml += `<span class="combo-badge badge-popular">Popular</span>`;
+            }
+            
+            // Create services HTML
+            let servicesHtml = '';
+            if (combo.services && combo.services.length > 0) {
+                servicesHtml = `
+                    <div class="combo-services">
+                        <h3 class="section-title">Services Included</h3>
+                        <div class="services-list">
+                            ${combo.services.map(service => `
+                                <div class="service-item">
+                                    <div class="service-name">${service.service.title}</div>
+                                    <div class="service-quantity">Quantity: ${service.quantity || 1}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Create features HTML
+            let featuresHtml = '';
+            if (combo.features && combo.features.length > 0) {
+                featuresHtml = `
+                    <div class="combo-features">
+                        <h3 class="section-title">Features</h3>
+                        <ul>
+                            ${combo.features.map(feature => `<li>${feature}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+            
+            // Create categories HTML
+            let categoriesHtml = '';
+            if (combo.categories && combo.categories.length > 0) {
+                categoriesHtml = `
+                    <div class="combo-categories">
+                        <h3 class="section-title">Categories</h3>
+                        <div>
+                            ${combo.categories.map(category => `
+                                <span class="badge">${category.title}</span>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            document.getElementById('comboDetail').innerHTML = `
+                <div class="combo-detail-header">
+                    <img src="${combo.image?.url || 'https://picsum.photos/seed/combo/1200/400.jpg'}" alt="${combo.image?.alt || combo.title}">
+                    ${badgesHtml}
+                </div>
+                <div class="combo-detail-content">
+                    <h1 class="combo-detail-title">${combo.title}</h1>
+                    <p class="combo-detail-description">${combo.description}</p>
+                    
+                    <div class="combo-detail-info">
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <i class="fas fa-tag"></i>
+                            </div>
+                            <div class="info-content">
+                                <h4>Price</h4>
+                                <div class="combo-pricing">
+                                    <span class="combo-price">₹${combo.pricing.discountedPrice}</span>
+                                    ${combo.pricing.originalPrice !== combo.pricing.discountedPrice 
+                                        ? `<span class="combo-original-price">₹${combo.pricing.originalPrice}</span>` 
+                                        : ''}
+                                    ${discountPercentage > 0 ? `<span class="combo-discount">${discountPercentage}% OFF</span>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="info-content">
+                                <h4>Delivery Time</h4>
+                                <p>${deliveryTime}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <i class="fas fa-eye"></i>
+                            </div>
+                            <div class="info-content">
+                                <h4>Views</h4>
+                                <p>${combo.views}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <i class="fas fa-shopping-cart"></i>
+                            </div>
+                            <div class="info-content">
+                                <h4>Orders</h4>
+                                <p>${combo.orders}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    ${servicesHtml}
+                    ${featuresHtml}
+                    ${categoriesHtml}
+                    
+                    <div class="combo-actions" style="margin-top: 30px;">
+                        <button class="btn" onclick="hideComboDetail()">
+                            <i class="fas fa-arrow-left"></i> Back to Combos
+                        </button>
+                        <button class="btn btn-success">
+                            <i class="fas fa-shopping-cart"></i> Order Now
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Hide combo detail view
+        function hideComboDetail() {
+            document.getElementById('combosGrid').style.display = 'grid';
+            document.getElementById('comboDetail').style.display = 'none';
+            document.getElementById('pagination').style.display = 'flex';
+        }
+        
+        // Search combos
+        function searchCombos() {
+            const searchTerm = document.getElementById('searchInput').value.trim();
+            
+            if (!searchTerm) {
+                showToast('Please enter a search term', 'warning');
+                return;
+            }
+            
+            currentView = 'search';
+            currentSearchTerm = searchTerm;
+            currentCategoryId = null;
+            currentPage = 1;
+            
+            document.getElementById('pageTitle').textContent = `Search Results for "${searchTerm}"`;
+            
+            if (isDemoMode) {
+                const searchResults = demoCombos.filter(combo => 
+                    combo.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    combo.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    combo.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+                );
+                displayCombos(searchResults);
+                document.getElementById('pagination').innerHTML = '';
+                
+                if (searchResults.length === 0) {
+                    showEmptyState();
+                } else {
+                    hideEmptyState();
+                }
+            } else {
+                fetchCombos();
+            }
+        }
+        
+        // Filter by category
+        function filterByCategory() {
+            const categoryId = document.getElementById('categoryFilter').value;
+            
+            if (!categoryId) {
+                showCombos();
+                return;
+            }
+            
+            currentView = 'category';
+            currentCategoryId = categoryId;
+            currentSearchTerm = null;
+            currentPage = 1;
+            
+            const category = categories.find(c => c._id === categoryId);
+            document.getElementById('pageTitle').textContent = `Combos in "${category.title}"`;
+            
+            if (isDemoMode) {
+                // In demo mode, we'll just show all combos
+                displayCombos(demoCombos);
+                document.getElementById('pagination').innerHTML = '';
+            } else {
+                fetchCombos();
+            }
+        }
+        
+        // Reset filters
+        function resetFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('categoryFilter').value = '';
+            
+            if (currentView === 'search' || currentView === 'category') {
+                showCombos();
+            } else {
+                currentPage = 1;
+                if (currentView === 'featured') {
+                    if (isDemoMode) {
+                        showFeaturedCombos();
+                    } else {
+                        fetchFeaturedCombos();
+                    }
+                } else if (currentView === 'popular') {
+                    if (isDemoMode) {
+                        showPopularCombos();
+                    } else {
+                        fetchPopularCombos();
+                    }
+                } else {
+                    if (isDemoMode) {
+                        showCombos();
+                    } else {
+                        fetchCombos();
+                    }
+                }
+            }
+        }
+        
+        // Render pagination
+        function renderPagination(pagination) {
+            const paginationEl = document.getElementById('pagination');
+            paginationEl.innerHTML = '';
+            
+            if (pagination.totalPages <= 1) return;
+            
+            // Previous button
+            const prevBtn = document.createElement('button');
+            prevBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
+            prevBtn.disabled = !pagination.hasPrev;
+            prevBtn.onclick = () => {
+                if (pagination.hasPrev) {
+                    currentPage--;
+                    fetchCombos();
+                }
+            };
+            paginationEl.appendChild(prevBtn);
+            
+            // Page numbers
+            const startPage = Math.max(1, pagination.currentPage - 2);
+            const endPage = Math.min(pagination.totalPages, startPage + 4);
+            
+            for (let i = startPage; i <= endPage; i++) {
+                const pageBtn = document.createElement('button');
+                pageBtn.textContent = i;
+                pageBtn.className = i === pagination.currentPage ? 'active' : '';
+                pageBtn.onclick = () => {
+                    currentPage = i;
+                    fetchCombos();
+                };
+                paginationEl.appendChild(pageBtn);
+            }
+            
+            // Next button
+            const nextBtn = document.createElement('button');
+            nextBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
+            nextBtn.disabled = !pagination.hasNext;
+            nextBtn.onclick = () => {
+                if (pagination.hasNext) {
+                    currentPage++;
+                    fetchCombos();
+                }
+            };
+            paginationEl.appendChild(nextBtn);
+        }
+        
+        // Show add combo modal
+        function showAddComboModal() {
+            document.getElementById('modalTitle').textContent = 'Add New Combo';
+            document.getElementById('comboForm').reset();
+            document.getElementById('comboId').value = '';
+            document.getElementById('imagePreview').innerHTML = '';
+            document.getElementById('saveBtnText').textContent = 'Save Combo';
+            
+            // Reset services to just one empty service
+            const servicesContainer = document.getElementById('servicesContainer');
+            servicesContainer.innerHTML = `
+                <div class="service-item">
+                    <select class="form-control service-select">
+                        <option value="">Select a service</option>
+                        ${services.map(service => `
+                            <option value="${service._id}">${service.title}</option>
+                        `).join('')}
+                    </select>
+                    <input type="number" class="form-control" min="1" value="1" placeholder="Qty">
+                    <button type="button" onclick="removeService(this)"><i class="fas fa-trash"></i></button>
+                </div>
+            `;
+            
+            document.getElementById('comboModal').style.display = 'block';
+        }
+        
+        // Show edit combo modal
+        function showEditComboModal(comboId) {
+            let combo;
+            
+            if (isDemoMode) {
+                combo = demoCombos.find(c => c._id === comboId);
+                if (!combo) {
+                    showToast('Combo not found', 'error');
+                    return;
+                }
+                
+                // Populate form with demo data
+                document.getElementById('modalTitle').textContent = 'Edit Combo';
+                document.getElementById('comboId').value = combo._id;
+                document.getElementById('title').value = combo.title;
+                document.getElementById('description').value = combo.description;
+                document.getElementById('shortDescription').value = combo.shortDescription || '';
+                document.getElementById('originalPrice').value = combo.pricing.originalPrice;
+                document.getElementById('discountedPrice').value = combo.pricing.discountedPrice;
+                document.getElementById('deliveryTimeValue').value = combo.deliveryTime.value;
+                document.getElementById('deliveryTimeUnit').value = combo.deliveryTime.unit;
+                document.getElementById('features').value = combo.features ? combo.features.join(', ') : '';
+                document.getElementById('tags').value = combo.tags ? combo.tags.join(', ') : '';
+                document.getElementById('isFeatured').checked = combo.isFeatured;
+                document.getElementById('isPopular').checked = combo.isPopular;
+                document.getElementById('isActive').checked = combo.isActive;
+                document.getElementById('sortOrder').value = combo.sortOrder;
+                document.getElementById('alt').value = combo.image?.alt || '';
+                
+                // Show existing image
+                if (combo.image?.url) {
+                    document.getElementById('imagePreview').innerHTML = `
+                        <img src="${combo.image.url}" alt="${combo.image.alt || combo.title}">
+                    `;
+                } else {
+                    document.getElementById('imagePreview').innerHTML = '';
+                }
+                
+                // Populate services
+                const servicesContainer = document.getElementById('servicesContainer');
+                servicesContainer.innerHTML = '';
+                
+                if (combo.services && combo.services.length > 0) {
+                    combo.services.forEach(service => {
+                        const serviceItem = document.createElement('div');
+                        serviceItem.className = 'service-item';
+                        serviceItem.innerHTML = `
+                            <select class="form-control service-select">
+                                <option value="">Select a service</option>
+                                ${services.map(s => `
+                                    <option value="${s._id}" ${s._id === service.service._id ? 'selected' : ''}>${s.title}</option>
+                                `).join('')}
+                            </select>
+                            <input type="number" class="form-control" min="1" value="${service.quantity || 1}" placeholder="Qty">
+                            <button type="button" onclick="removeService(this)"><i class="fas fa-trash"></i></button>
+                        `;
+                        servicesContainer.appendChild(serviceItem);
+                    });
+                } else {
+                    // Add one empty service if none exist
+                    addService();
+                }
+                
+                document.getElementById('saveBtnText').textContent = 'Update Combo';
+                document.getElementById('comboModal').style.display = 'block';
+            } else {
+                showLoading();
+                
+                fetch(`${API_BASE_URL}/combos/${comboId}`)
+                    .then(response => {
+                        if (!response.ok) throw new Error('Failed to fetch combo details');
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            combo = data.data;
+                            
+                            document.getElementById('modalTitle').textContent = 'Edit Combo';
+                            document.getElementById('comboId').value = combo._id;
+                            document.getElementById('title').value = combo.title;
+                            document.getElementById('description').value = combo.description;
+                            document.getElementById('shortDescription').value = combo.shortDescription || '';
+                            document.getElementById('originalPrice').value = combo.pricing.originalPrice;
+                            document.getElementById('discountedPrice').value = combo.pricing.discountedPrice;
+                            document.getElementById('deliveryTimeValue').value = combo.deliveryTime.value;
+                            document.getElementById('deliveryTimeUnit').value = combo.deliveryTime.unit;
+                            document.getElementById('features').value = combo.features ? combo.features.join(', ') : '';
+                            document.getElementById('tags').value = combo.tags ? combo.tags.join(', ') : '';
+                            document.getElementById('isFeatured').checked = combo.isFeatured;
+                            document.getElementById('isPopular').checked = combo.isPopular;
+                            document.getElementById('isActive').checked = combo.isActive;
+                            document.getElementById('sortOrder').value = combo.sortOrder;
+                            document.getElementById('alt').value = combo.image?.alt || '';
+                            
+                            // Show existing image
+                            if (combo.image?.url) {
+                                document.getElementById('imagePreview').innerHTML = `
+                                    <img src="${combo.image.url}" alt="${combo.image.alt || combo.title}">
+                                `;
+                            } else {
+                                document.getElementById('imagePreview').innerHTML = '';
+                            }
+                            
+                            // Populate services
+                            const servicesContainer = document.getElementById('servicesContainer');
+                            servicesContainer.innerHTML = '';
+                            
+                            if (combo.services && combo.services.length > 0) {
+                                combo.services.forEach(service => {
+                                    const serviceItem = document.createElement('div');
+                                    serviceItem.className = 'service-item';
+                                    serviceItem.innerHTML = `
+                                        <select class="form-control service-select">
+                                            <option value="">Select a service</option>
+                                            ${services.map(s => `
+                                                <option value="${s._id}" ${s._id === service.service._id ? 'selected' : ''}>${s.title}</option>
+                                            `).join('')}
+                                        </select>
+                                        <input type="number" class="form-control" min="1" value="${service.quantity || 1}" placeholder="Qty">
+                                        <button type="button" onclick="removeService(this)"><i class="fas fa-trash"></i></button>
+                                    `;
+                                    servicesContainer.appendChild(serviceItem);
+                                });
+                            } else {
+                                // Add one empty service if none exist
+                                addService();
+                            }
+                            
+                            document.getElementById('saveBtnText').textContent = 'Update Combo';
+                            document.getElementById('comboModal').style.display = 'block';
+                        } else {
+                            throw new Error(data.message || 'Failed to fetch combo details');
+                        }
+                    })
+                    .catch(error => {
+                        showToast('Error fetching combo details', 'error');
+                        console.error('Error fetching combo details:', error);
+                    })
+                    .finally(() => {
+                        hideLoading();
+                    });
+            }
+        }
+        
+        // Close combo modal
+        function closeComboModal() {
+            document.getElementById('comboModal').style.display = 'none';
+        }
+        
+        // Add service to form
+        function addService() {
+            const servicesContainer = document.getElementById('servicesContainer');
+            const serviceItem = document.createElement('div');
+            serviceItem.className = 'service-item';
+            serviceItem.innerHTML = `
+                <select class="form-control service-select">
+                    <option value="">Select a service</option>
+                    ${services.map(service => `
+                        <option value="${service._id}">${service.title}</option>
+                    `).join('')}
+                </select>
+                <input type="number" class="form-control" min="1" value="1" placeholder="Qty">
+                <button type="button" onclick="removeService(this)"><i class="fas fa-trash"></i></button>
+            `;
+            servicesContainer.appendChild(serviceItem);
+        }
+        
+        // Remove service from form
+        function removeService(button) {
+            const serviceItems = document.querySelectorAll('.service-item');
+            if (serviceItems.length > 1) {
+                button.parentElement.remove();
+            } else {
+                showToast('At least one service is required', 'warning');
+            }
+        }
+        
+        // Handle image upload
+        function handleImageUpload(file) {
+            if (!file.type.startsWith('image/')) {
+                showToast('Please upload an image file', 'error');
+                return;
+            }
+            
+            if (file.size > 10 * 1024 * 1024) {
+                showToast('Image size must be less than 10MB', 'error');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('imagePreview').innerHTML = `
+                    <img src="${e.target.result}" alt="Preview">
+                `;
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        // Save combo (create or update)
+        function saveCombo() {
+            if (isDemoMode) {
+                showToast('This feature is not available in demo mode', 'warning');
+                return;
+            }
+            
+            const comboId = document.getElementById('comboId').value;
+            const isUpdate = !!comboId;
+            
+            // Validate form
+            const title = document.getElementById('title').value.trim();
+            const description = document.getElementById('description').value.trim();
+            const originalPrice = parseFloat(document.getElementById('originalPrice').value);
+            const discountedPrice = parseFloat(document.getElementById('discountedPrice').value);
+            const deliveryTimeValue = parseInt(document.getElementById('deliveryTimeValue').value);
+            
+            if (!title || !description || isNaN(originalPrice) || isNaN(discountedPrice) || isNaN(deliveryTimeValue)) {
+                showToast('Please fill in all required fields', 'error');
+                return;
+            }
+            
+            if (discountedPrice > originalPrice) {
+                showToast('Discounted price cannot be greater than original price', 'error');
+                return;
+            }
+            
+            // Collect services
+            const serviceItems = document.querySelectorAll('.service-item');
+            const services = [];
+            
+            for (const item of serviceItems) {
+                const serviceId = item.querySelector('.service-select').value;
+                const quantity = parseInt(item.querySelector('input[type="number"]').value) || 1;
+                
+                if (!serviceId) {
+                    showToast('Please select a service for all items', 'error');
+                    return;
+                }
+                
+                services.push({ service: serviceId, quantity });
+            }
+            
+            if (services.length === 0) {
+                showToast('At least one service is required', 'error');
+                return;
+            }
+            
+            // Collect features and tags
+            const features = document.getElementById('features').value
+                .split(',')
+                .map(f => f.trim())
+                .filter(f => f);
+                
+            const tags = document.getElementById('tags').value
+                .split(',')
+                .map(t => t.trim().toLowerCase())
+                .filter(t => t);
+            
+            // Prepare form data
+            const formData = new FormData();
+            formData.append('title', title);
+            formData.append('description', description);
+            formData.append('shortDescription', document.getElementById('shortDescription').value.trim());
+            formData.append('originalPrice', originalPrice);
+            formData.append('discountedPrice', discountedPrice);
+            formData.append('deliveryTimeValue', deliveryTimeValue);
+            formData.append('deliveryTimeUnit', document.getElementById('deliveryTimeUnit').value);
+            formData.append('services', JSON.stringify(services));
+            formData.append('features', JSON.stringify(features));
+            formData.append('tags', JSON.stringify(tags));
+            formData.append('isFeatured', document.getElementById('isFeatured').checked);
+            formData.append('isPopular', document.getElementById('isPopular').checked);
+            formData.append('isActive', document.getElementById('isActive').checked);
+            formData.append('sortOrder', parseInt(document.getElementById('sortOrder').value) || 0);
+            formData.append('alt', document.getElementById('alt').value.trim());
+            
+            // Add image if selected
+            const imageInput = document.getElementById('imageInput');
+            if (imageInput.files.length > 0) {
+                formData.append('image', imageInput.files[0]);
+            }
+            
+            // Show loading
+            document.getElementById('saveBtnText').style.display = 'none';
+            document.getElementById('saveBtnSpinner').style.display = 'inline-block';
+            
+            const url = isUpdate ? `${API_BASE_URL}/combos/${comboId}` : `${API_BASE_URL}/combos`;
+            const method = isUpdate ? 'PUT' : 'POST';
+            
+            fetch(url, {
+                method,
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to save combo');
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    showToast(isUpdate ? 'Combo updated successfully' : 'Combo created successfully', 'success');
+                    closeComboModal();
+                    
+                    // Refresh the list
+                    if (currentView === 'featured') {
+                        fetchFeaturedCombos();
+                    } else if (currentView === 'popular') {
+                        fetchPopularCombos();
+                    } else {
+                        fetchCombos();
+                    }
+                } else {
+                    throw new Error(data.message || 'Failed to save combo');
+                }
+            })
+            .catch(error => {
+                showToast(`Error ${isUpdate ? 'updating' : 'creating'} combo: ${error.message}`, 'error');
+                console.error(`Error ${isUpdate ? 'updating' : 'creating'} combo:`, error);
+            })
+            .finally(() => {
+                document.getElementById('saveBtnText').style.display = 'inline';
+                document.getElementById('saveBtnSpinner').style.display = 'none';
+            });
+        }
+        
+        // Toggle combo active status
+        function toggleComboActive(comboId, currentStatus) {
+            if (isDemoMode) {
+                showToast('This feature is not available in demo mode', 'warning');
+                return;
+            }
+            
+            if (!confirm(`Are you sure you want to ${currentStatus ? 'deactivate' : 'activate'} this combo?`)) {
+                return;
+            }
+            
+            fetch(`${API_BASE_URL}/combos/${comboId}/toggle-active`, {
+                method: 'PATCH'
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to toggle combo status');
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    showToast(`Combo ${data.data.isActive ? 'activated' : 'deactivated'} successfully`, 'success');
+                    
+                    // Refresh the list
+                    if (currentView === 'featured') {
+                        fetchFeaturedCombos();
+                    } else if (currentView === 'popular') {
+                        fetchPopularCombos();
+                    } else {
+                        fetchCombos();
+                    }
+                } else {
+                    throw new Error(data.message || 'Failed to toggle combo status');
+                }
+            })
+            .catch(error => {
+                showToast('Error toggling combo status', 'error');
+                console.error('Error toggling combo status:', error);
+            });
+        }
+        
+        // Delete combo
+        function deleteCombo(comboId) {
+            if (isDemoMode) {
+                showToast('This feature is not available in demo mode', 'warning');
+                return;
+            }
+            
+            if (!confirm('Are you sure you want to delete this combo? This action cannot be undone.')) {
+                return;
+            }
+            
+            fetch(`${API_BASE_URL}/combos/${comboId}`, {
+                method: 'DELETE'
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to delete combo');
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    showToast('Combo deleted successfully', 'success');
+                    
+                    // Refresh the list
+                    if (currentView === 'featured') {
+                        fetchFeaturedCombos();
+                    } else if (currentView === 'popular') {
+                        fetchPopularCombos();
+                    } else {
+                        fetchCombos();
+                    }
+                } else {
+                    throw new Error(data.message || 'Failed to delete combo');
+                }
+            })
+            .catch(error => {
+                showToast('Error deleting combo', 'error');
+                console.error('Error deleting combo:', error);
+            });
+        }
+        
+        // Show loading spinner
+        function showLoading() {
+            document.getElementById('loadingSpinner').style.display = 'flex';
+            document.getElementById('combosGrid').style.display = 'none';
+            document.getElementById('emptyState').style.display = 'none';
+        }
+        
+        // Hide loading spinner
+        function hideLoading() {
+            document.getElementById('loadingSpinner').style.display = 'none';
+            document.getElementById('combosGrid').style.display = 'grid';
+        }
+        
+        // Show empty state
+        function showEmptyState() {
+            document.getElementById('combosGrid').style.display = 'none';
+            document.getElementById('emptyState').style.display = 'block';
+            document.getElementById('pagination').innerHTML = '';
+        }
+        
+        // Hide empty state
+        function hideEmptyState() {
+            document.getElementById('emptyState').style.display = 'none';
+        }
+        
+        // Show toast notification
+        function showToast(message, type = 'success') {
+            const toastContainer = document.getElementById('toastContainer');
+            
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            
+            let icon = '';
+            if (type === 'success') {
+                icon = '<i class="fas fa-check-circle"></i>';
+            } else if (type === 'error') {
+                icon = '<i class="fas fa-exclamation-circle"></i>';
+            } else if (type === 'warning') {
+                icon = '<i class="fas fa-exclamation-triangle"></i>';
+            }
+            
+            toast.innerHTML = `
+                <div class="toast-icon">${icon}</div>
+                <div class="toast-message">${message}</div>
+                <button class="toast-close" onclick="this.parentElement.remove()">&times;</button>
+            `;
+            
+            toastContainer.appendChild(toast);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (toast.parentElement) {
+                    toast.remove();
+                }
+            }, 5000);
+        }
+        
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('comboModal');
+            if (event.target === modal) {
+                closeComboModal();
+            }
+        }
+    </script>
+</body>
+</html>

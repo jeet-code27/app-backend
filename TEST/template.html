@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Template API Tester</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .response-box {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .api-section {
+            border-left: 4px solid #3b82f6;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h1 class="text-3xl font-bold text-gray-800 mb-4">Template API Tester</h1>
+            <div class="flex items-center space-x-4">
+                <label class="font-medium text-gray-700">Base URL:</label>
+                <input type="text" id="baseUrl" value="http://localhost:5000" 
+                       class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <button onclick="testConnection()" 
+                        class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md transition-colors">
+                    Test Connection
+                </button>
+            </div>
+            <div id="connectionStatus" class="mt-2 text-sm"></div>
+        </div>
+
+        <!-- API Sections -->
+        <div class="space-y-8">
+            
+            <!-- Get All Templates -->
+            <div class="bg-white rounded-lg shadow-md p-6 api-section">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">GET /api/templates - Get All Templates</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+                    <input type="number" id="page" placeholder="Page (1)" class="px-3 py-2 border rounded-md">
+                    <input type="number" id="limit" placeholder="Limit (12)" class="px-3 py-2 border rounded-md">
+                    <input type="text" id="service" placeholder="Service ID" class="px-3 py-2 border rounded-md">
+                    <input type="text" id="category" placeholder="Category ID" class="px-3 py-2 border rounded-md">
+                    <select id="industry" class="px-3 py-2 border rounded-md">
+                        <option value="">Select Industry</option>
+                        <option value="doctor-clinic">Doctor Clinic</option>
+                        <option value="restaurant-cafe">Restaurant Cafe</option>
+                        <option value="hotel-resort">Hotel Resort</option>
+                        <option value="coaching-institute">Coaching Institute</option>
+                        <option value="architect-interior">Architect Interior</option>
+                        <option value="salon-spa">Salon Spa</option>
+                        <option value="gym-fitness">Gym Fitness</option>
+                        <option value="real-estate">Real Estate</option>
+                        <option value="other">Other</option>
+                    </select>
+                    <select id="designStyle" class="px-3 py-2 border rounded-md">
+                        <option value="">Select Design Style</option>
+                        <option value="modern">Modern</option>
+                        <option value="minimalist">Minimalist</option>
+                        <option value="classic">Classic</option>
+                        <option value="bold">Bold</option>
+                        <option value="elegant">Elegant</option>
+                        <option value="creative">Creative</option>
+                        <option value="professional">Professional</option>
+                    </select>
+                    <input type="text" id="search" placeholder="Search term" class="px-3 py-2 border rounded-md">
+                    <select id="sortBy" class="px-3 py-2 border rounded-md">
+                        <option value="createdAt">Created At</option>
+                        <option value="title">Title</option>
+                        <option value="views">Views</option>
+                        <option value="selections">Selections</option>
+                    </select>
+                </div>
+                <div class="flex space-x-2 mb-4">
+                    <button onclick="getAllTemplates()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md">
+                        Get All Templates
+                    </button>
+                    <button onclick="clearResponse('getAllResponse')" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md">
+                        Clear
+                    </button>
+                </div>
+                <div id="getAllResponse" class="bg-gray-100 p-4 rounded-md response-box"></div>
+            </div>
+
+            <!-- Get Featured Templates -->
+            <div class="bg-white rounded-lg shadow-md p-6 api-section">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">GET /api/templates/featured - Get Featured Templates</h2>
+                <div class="flex space-x-4 mb-4">
+                    <input type="number" id="featuredLimit" placeholder="Limit (8)" class="px-3 py-2 border rounded-md">
+                    <button onclick="getFeaturedTemplates()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md">
+                        Get Featured Templates
+                    </button>
+                    <button onclick="clearResponse('featuredResponse')" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md">
+                        Clear
+                    </button>
+                </div>
+                <div id="featuredResponse" class="bg-gray-100 p-4 rounded-md response-box"></div>
+            </div>
+
+            <!-- Get Popular Templates -->
+            <div class="bg-white rounded-lg shadow-md p-6 api-section">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">GET /api/templates/popular - Get Popular Templates</h2>
+                <div class="flex space-x-4 mb-4">
+                    <input type="number" id="popularLimit" placeholder="Limit (8)" class="px-3 py-2 border rounded-md">
+                    <button onclick="getPopularTemplates()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md">
+                        Get Popular Templates
+                    </button>
+                    <button onclick="clearResponse('popularResponse')" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md">
+                        Clear
+                    </button>
+                </div>
+                <div id="popularResponse" class="bg-gray-100 p-4 rounded-md response-box"></div>
+            </div>
+
+            <!-- Get Templates by Service -->
+            <div class="bg-white rounded-lg shadow-md p-6 api-section">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">GET /api/templates/service/:serviceId - Get Templates by Service</h2>
+                <div class="flex space-x-4 mb-4">
+                    <input type="text" id="serviceIdParam" placeholder="Service ID" class="px-3 py-2 border rounded-md" required>
+                    <button onclick="getTemplatesByService()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md">
+                        Get Templates by Service
+                    </button>
+                    <button onclick="clearResponse('serviceResponse')" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md">
+                        Clear
+                    </button>
+                </div>
+                <div id="serviceResponse" class="bg-gray-100 p-4 rounded-md response-box"></div>
+            </div>
+
+            <!-- Get Templates by Industry -->
+            <div class="bg-white rounded-lg shadow-md p-6 api-section">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">GET /api/templates/industry/:industry - Get Templates by Industry</h2>
+                <div class="flex space-x-4 mb-4">
+                    <select id="industryParam" class="px-3 py-2 border rounded-md" required>
+                        <option value="">Select Industry</option>
+                        <option value="doctor-clinic">Doctor Clinic</option>
+                        <option value="restaurant-cafe">Restaurant Cafe</option>
+                        <option value="hotel-resort">Hotel Resort</option>
+                        <option value="coaching-institute">Coaching Institute</option>
+                        <option value="other">Other</option>
+                    </select>
+                    <button onclick="getTemplatesByIndustry()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md">
+                        Get Templates by Industry
+                    </button>
+                    <button onclick="clearResponse('industryResponse')" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md">
+                        Clear
+                    </button>
+                </div>
+                <div id="industryResponse" class="bg-gray-100 p-4 rounded-md response-box"></div>
+            </div>
+
+            <!-- Get Template by ID -->
+            <div class="bg-white rounded-lg shadow-md p-6 api-section">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">GET /api/templates/:id - Get Template by ID</h2>
+                <div class="flex space-x-4 mb-4">
+                    <input type="text" id="templateId" placeholder="Template ID" class="px-3 py-2 border rounded-md" required>
+                    <button onclick="getTemplateById()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md">
+                        Get Template by ID
+                    </button>
+                    <button onclick="clearResponse('templateByIdResponse')" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md">
+                        Clear
+                    </button>
+                </div>
+                <div id="templateByIdResponse" class="bg-gray-100 p-4 rounded-md response-box"></div>
+            </div>
+
+            <!-- Get Template by Slug -->
+            <div class="bg-white rounded-lg shadow-md p-6 api-section">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">GET /api/templates/slug/:slug - Get Template by Slug</h2>
+                <div class="flex space-x-4 mb-4">
+                    <input type="text" id="templateSlug" placeholder="Template Slug" class="px-3 py-2 border rounded-md" required>
+                    <button onclick="getTemplateBySlug()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md">
+                        Get Template by Slug
+                    </button>
+                    <button onclick="clearResponse('templateBySlugResponse')" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md">
+                        Clear
+                    </button>
+                </div>
+                <div id="templateBySlugResponse" class="bg-gray-100 p-4 rounded-md response-box"></div>
+            </div>
+
+            <!-- Select Template -->
+            <div class="bg-white rounded-lg shadow-md p-6 api-section">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">PATCH /api/templates/:id/select - Select Template</h2>
+                <div class="flex space-x-4 mb-4">
+                    <input type="text" id="selectTemplateId" placeholder="Template ID" class="px-3 py-2 border rounded-md" required>
+                    <button onclick="selectTemplate()" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-md">
+                        Select Template
+                    </button>
+                    <button onclick="clearResponse('selectResponse')" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md">
+                        Clear
+                    </button>
+                </div>
+                <div id="selectResponse" class="bg-gray-100 p-4 rounded-md response-box"></div>
+            </div>
+
+            <!-- Create Template -->
+            <div class="bg-white rounded-lg shadow-md p-6 api-section">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">POST /api/templates - Create Template (Admin)</h2>
+                <form id="createTemplateForm" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input type="text" id="createTitle" placeholder="Title*" class="px-3 py-2 border rounded-md" required>
+                        <input type="text" id="createServiceId" placeholder="Service ID*" class="px-3 py-2 border rounded-md" required>
+                        <input type="text" id="createCategoryId" placeholder="Category ID*" class="px-3 py-2 border rounded-md" required>
+                        <select id="createIndustry" class="px-3 py-2 border rounded-md" required>
+                            <option value="">Select Industry*</option>
+                            <option value="doctor-clinic">Doctor Clinic</option>
+                            <option value="restaurant-cafe">Restaurant Cafe</option>
+                            <option value="hotel-resort">Hotel Resort</option>
+                            <option value="coaching-institute">Coaching Institute</option>
+                            <option value="other">Other</option>
+                        </select>
+                        <select id="createDesignStyle" class="px-3 py-2 border rounded-md" required>
+                            <option value="">Select Design Style*</option>
+                            <option value="modern">Modern</option>
+                            <option value="minimalist">Minimalist</option>
+                            <option value="classic">Classic</option>
+                            <option value="bold">Bold</option>
+                            <option value="elegant">Elegant</option>
+                        </select>
+                        <input type="number" id="createBasePrice" placeholder="Base Price" class="px-3 py-2 border rounded-md">
+                        <input type="url" id="createDemoUrl" placeholder="Demo URL" class="px-3 py-2 border rounded-md">
+                        <input type="text" id="createTags" placeholder="Tags (comma separated)" class="px-3 py-2 border rounded-md">
+                    </div>
+                    <textarea id="createDescription" placeholder="Description*" class="w-full px-3 py-2 border rounded-md" rows="3" required></textarea>
+                    <input type="file" id="createImages" multiple accept="image/*" class="w-full px-3 py-2 border rounded-md">
+                    <div class="flex space-x-2">
+                        <button type="button" onclick="createTemplate()" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md">
+                            Create Template
+                        </button>
+                        <button type="button" onclick="clearResponse('createResponse')" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md">
+                            Clear
+                        </button>
+                    </div>
+                </form>
+                <div id="createResponse" class="bg-gray-100 p-4 rounded-md response-box mt-4"></div>
+            </div>
+
+            <!-- Update Template -->
+            <div class="bg-white rounded-lg shadow-md p-6 api-section">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">PUT /api/templates/:id - Update Template (Admin)</h2>
+                <div class="mb-4">
+                    <input type="text" id="updateTemplateId" placeholder="Template ID to Update*" class="px-3 py-2 border rounded-md w-full" required>
+                </div>
+                <form id="updateTemplateForm" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input type="text" id="updateTitle" placeholder="Title" class="px-3 py-2 border rounded-md">
+                        <input type="text" id="updateServiceId" placeholder="Service ID" class="px-3 py-2 border rounded-md">
+                        <input type="text" id="updateCategoryId" placeholder="Category ID" class="px-3 py-2 border rounded-md">
+                        <select id="updateIndustry" class="px-3 py-2 border rounded-md">
+                            <option value="">Select Industry</option>
+                            <option value="doctor-clinic">Doctor Clinic</option>
+                            <option value="restaurant-cafe">Restaurant Cafe</option>
+                            <option value="hotel-resort">Hotel Resort</option>
+                            <option value="other">Other</option>
+                        </select>
+                        <select id="updateDesignStyle" class="px-3 py-2 border rounded-md">
+                            <option value="">Select Design Style</option>
+                            <option value="modern">Modern</option>
+                            <option value="minimalist">Minimalist</option>
+                            <option value="classic">Classic</option>
+                        </select>
+                        <input type="number" id="updateBasePrice" placeholder="Base Price" class="px-3 py-2 border rounded-md">
+                    </div>
+                    <textarea id="updateDescription" placeholder="Description" class="w-full px-3 py-2 border rounded-md" rows="3"></textarea>
+                    <input type="file" id="updateImages" multiple accept="image/*" class="w-full px-3 py-2 border rounded-md">
+                    <div class="flex space-x-2">
+                        <button type="button" onclick="updateTemplate()" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-md">
+                            Update Template
+                        </button>
+                        <button type="button" onclick="clearResponse('updateResponse')" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md">
+                            Clear
+                        </button>
+                    </div>
+                </form>
+                <div id="updateResponse" class="bg-gray-100 p-4 rounded-md response-box mt-4"></div>
+            </div>
+
+            <!-- Toggle Template Active -->
+            <div class="bg-white rounded-lg shadow-md p-6 api-section">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">PATCH /api/templates/:id/toggle-active - Toggle Template Active (Admin)</h2>
+                <div class="flex space-x-4 mb-4">
+                    <input type="text" id="toggleTemplateId" placeholder="Template ID" class="px-3 py-2 border rounded-md" required>
+                    <button onclick="toggleTemplateActive()" class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-md">
+                        Toggle Active Status
+                    </button>
+                    <button onclick="clearResponse('toggleResponse')" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md">
+                        Clear
+                    </button>
+                </div>
+                <div id="toggleResponse" class="bg-gray-100 p-4 rounded-md response-box"></div>
+            </div>
+
+            <!-- Delete Template -->
+            <div class="bg-white rounded-lg shadow-md p-6 api-section">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">DELETE /api/templates/:id - Delete Template (Admin)</h2>
+                <div class="flex space-x-4 mb-4">
+                    <input type="text" id="deleteTemplateId" placeholder="Template ID" class="px-3 py-2 border rounded-md" required>
+                    <button onclick="deleteTemplate()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md">
+                        Delete Template
+                    </button>
+                    <button onclick="clearResponse('deleteResponse')" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md">
+                        Clear
+                    </button>
+                </div>
+                <div id="deleteResponse" class="bg-gray-100 p-4 rounded-md response-box"></div>
+            </div>
+
+            <!-- Bulk Update Order -->
+            <div class="bg-white rounded-lg shadow-md p-6 api-section">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">PATCH /api/templates/bulk-order - Bulk Update Template Order (Admin)</h2>
+                <div class="mb-4">
+                    <textarea id="bulkOrderData" placeholder='[{"id": "template_id_1", "sortOrder": 1}, {"id": "template_id_2", "sortOrder": 2}]' 
+                              class="w-full px-3 py-2 border rounded-md" rows="4"></textarea>
+                </div>
+                <div class="flex space-x-2">
+                    <button onclick="bulkUpdateOrder()" class="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-md">
+                        Bulk Update Order
+                    </button>
+                    <button onclick="clearResponse('bulkOrderResponse')" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md">
+                        Clear
+                    </button>
+                </div>
+                <div id="bulkOrderResponse" class="bg-gray-100 p-4 rounded-md response-box mt-4"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Helper functions
+        function getBaseUrl() {
+            return document.getElementById('baseUrl').value;
+        }
+
+        function displayResponse(elementId, data, status) {
+            const element = document.getElementById(elementId);
+            const statusColor = status >= 200 && status < 300 ? 'text-green-600' : 'text-red-600';
+            element.innerHTML = `
+                <div class="mb-2">
+                    <span class="font-semibold">Status: </span>
+                    <span class="${statusColor}">${status}</span>
+                </div>
+                <pre class="whitespace-pre-wrap text-sm">${JSON.stringify(data, null, 2)}</pre>
+            `;
+        }
+
+        function clearResponse(elementId) {
+            document.getElementById(elementId).innerHTML = '';
+        }
+
+        function buildQueryString(params) {
+            const query = new URLSearchParams();
+            Object.keys(params).forEach(key => {
+                if (params[key] !== '' && params[key] !== null && params[key] !== undefined) {
+                    query.append(key, params[key]);
+                }
+            });
+            return query.toString();
+        }
+
+        // Test connection
+        async function testConnection() {
+            const statusElement = document.getElementById('connectionStatus');
+            try {
+                const response = await fetch(`${getBaseUrl()}/api/health`);
+                const data = await response.json();
+                if (response.ok) {
+                    statusElement.innerHTML = '<span class="text-green-600">✅ Connection successful</span>';
+                } else {
+                    statusElement.innerHTML = '<span class="text-red-600">❌ Connection failed</span>';
+                }
+            } catch (error) {
+                displayResponse('createResponse', { error: error.message }, 500);
+            }
+        }
+
+        // Update Template
+        async function updateTemplate() {
+            try {
+                const templateId = document.getElementById('updateTemplateId').value;
+                if (!templateId) {
+                    alert('Please enter a Template ID to update');
+                    return;
+                }
+
+                const formData = new FormData();
+                
+                // Add text fields only if they have values
+                const title = document.getElementById('updateTitle').value;
+                if (title) formData.append('title', title);
+                
+                const description = document.getElementById('updateDescription').value;
+                if (description) formData.append('description', description);
+                
+                const service = document.getElementById('updateServiceId').value;
+                if (service) formData.append('service', service);
+                
+                const category = document.getElementById('updateCategoryId').value;
+                if (category) formData.append('category', category);
+                
+                const industry = document.getElementById('updateIndustry').value;
+                if (industry) formData.append('industry', industry);
+                
+                const designStyle = document.getElementById('updateDesignStyle').value;
+                if (designStyle) formData.append('designStyle', designStyle);
+                
+                const basePrice = document.getElementById('updateBasePrice').value;
+                if (basePrice) formData.append('basePrice', basePrice);
+                
+                // Add image files
+                const images = document.getElementById('updateImages').files;
+                for (let i = 0; i < images.length; i++) {
+                    formData.append('images', images[i]);
+                }
+                
+                const response = await fetch(`${getBaseUrl()}/api/templates/${templateId}`, {
+                    method: 'PUT',
+                    body: formData
+                });
+                const data = await response.json();
+                displayResponse('updateResponse', data, response.status);
+            } catch (error) {
+                displayResponse('updateResponse', { error: error.message }, 500);
+            }
+        }
+
+        // Toggle Template Active
+        async function toggleTemplateActive() {
+            try {
+                const templateId = document.getElementById('toggleTemplateId').value;
+                if (!templateId) {
+                    alert('Please enter a Template ID');
+                    return;
+                }
+                
+                const response = await fetch(`${getBaseUrl()}/api/templates/${templateId}/toggle-active`, {
+                    method: 'PATCH'
+                });
+                const data = await response.json();
+                displayResponse('toggleResponse', data, response.status);
+            } catch (error) {
+                displayResponse('toggleResponse', { error: error.message }, 500);
+            }
+        }
+
+        // Delete Template
+        async function deleteTemplate() {
+            try {
+                const templateId = document.getElementById('deleteTemplateId').value;
+                if (!templateId) {
+                    alert('Please enter a Template ID');
+                    return;
+                }
+                
+                if (!confirm('Are you sure you want to delete this template? This action cannot be undone.')) {
+                    return;
+                }
+                
+                const response = await fetch(`${getBaseUrl()}/api/templates/${templateId}`, {
+                    method: 'DELETE'
+                });
+                const data = await response.json();
+                displayResponse('deleteResponse', data, response.status);
+            } catch (error) {
+                displayResponse('deleteResponse', { error: error.message }, 500);
+            }
+        }
+
+        // Bulk Update Order
+        async function bulkUpdateOrder() {
+            try {
+                const bulkData = document.getElementById('bulkOrderData').value;
+                if (!bulkData) {
+                    alert('Please enter bulk order data');
+                    return;
+                }
+                
+                let templates;
+                try {
+                    templates = JSON.parse(bulkData);
+                } catch (parseError) {
+                    alert('Invalid JSON format. Please check your data.');
+                    return;
+                }
+                
+                const response = await fetch(`${getBaseUrl()}/api/templates/bulk-order`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ templates })
+                });
+                const data = await response.json();
+                displayResponse('bulkOrderResponse', data, response.status);
+            } catch (error) {
+                displayResponse('bulkOrderResponse', { error: error.message }, 500);
+            }
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Test connection on page load
+            testConnection();
+            
+            // Add some sample data for bulk order
+            document.getElementById('bulkOrderData').value = JSON.stringify([
+                {"id": "template_id_1", "sortOrder": 1},
+                {"id": "template_id_2", "sortOrder": 2},
+                {"id": "template_id_3", "sortOrder": 3}
+            ], null, 2);
+        });
+
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', function(event) {
+            // Ctrl + Enter to execute the focused section's main action
+            if (event.ctrlKey && event.key === 'Enter') {
+                const activeElement = document.activeElement;
+                if (activeElement) {
+                    const section = activeElement.closest('.api-section');
+                    if (section) {
+                        const button = section.querySelector('button[onclick]:not([onclick*="clear"])');
+                        if (button) {
+                            button.click();
+                        }
+                    }
+                }
+            }
+        });
+   
+
+               
+
+        // Get All Templates
+        async function getAllTemplates() {
+            try {
+                const params = {
+                    page: document.getElementById('page').value,
+                    limit: document.getElementById('limit').value,
+                    service: document.getElementById('service').value,
+                    category: document.getElementById('category').value,
+                    industry: document.getElementById('industry').value,
+                    designStyle: document.getElementById('designStyle').value,
+                    search: document.getElementById('search').value,
+                    sortBy: document.getElementById('sortBy').value
+                };
+
+                const queryString = buildQueryString(params);
+                const url = `${getBaseUrl()}/api/templates${queryString ? '?' + queryString : ''}`;
+                
+                const response = await fetch(url);
+                const data = await response.json();
+                displayResponse('getAllResponse', data, response.status);
+            } catch (error) {
+                displayResponse('getAllResponse', { error: error.message }, 500);
+            }
+        }
+
+        // Get Featured Templates
+        async function getFeaturedTemplates() {
+            try {
+                const limit = document.getElementById('featuredLimit').value;
+                const url = `${getBaseUrl()}/api/templates/featured${limit ? '?limit=' + limit : ''}`;
+                
+                const response = await fetch(url);
+                const data = await response.json();
+                displayResponse('featuredResponse', data, response.status);
+            } catch (error) {
+                displayResponse('featuredResponse', { error: error.message }, 500);
+            }
+        }
+
+        // Get Popular Templates
+        async function getPopularTemplates() {
+            try {
+                const limit = document.getElementById('popularLimit').value;
+                const url = `${getBaseUrl()}/api/templates/popular${limit ? '?limit=' + limit : ''}`;
+                
+                const response = await fetch(url);
+                const data = await response.json();
+                displayResponse('popularResponse', data, response.status);
+            } catch (error) {
+                displayResponse('popularResponse', { error: error.message }, 500);
+            }
+        }
+
+        // Get Templates by Service
+        async function getTemplatesByService() {
+            try {
+                const serviceId = document.getElementById('serviceIdParam').value;
+                if (!serviceId) {
+                    alert('Please enter a Service ID');
+                    return;
+                }
+                
+                const response = await fetch(`${getBaseUrl()}/api/templates/service/${serviceId}`);
+                const data = await response.json();
+                displayResponse('serviceResponse', data, response.status);
+            } catch (error) {
+                displayResponse('serviceResponse', { error: error.message }, 500);
+            }
+        }
+
+        // Get Templates by Industry
+        async function getTemplatesByIndustry() {
+            try {
+                const industry = document.getElementById('industryParam').value;
+                if (!industry) {
+                    alert('Please select an Industry');
+                    return;
+                }
+                
+                const response = await fetch(`${getBaseUrl()}/api/templates/industry/${industry}`);
+                const data = await response.json();
+                displayResponse('industryResponse', data, response.status);
+            } catch (error) {
+                displayResponse('industryResponse', { error: error.message }, 500);
+            }
+        }
+
+        // Get Template by ID
+        async function getTemplateById() {
+            try {
+                const templateId = document.getElementById('templateId').value;
+                if (!templateId) {
+                    alert('Please enter a Template ID');
+                    return;
+                }
+                
+                const response = await fetch(`${getBaseUrl()}/api/templates/${templateId}`);
+                const data = await response.json();
+                displayResponse('templateByIdResponse', data, response.status);
+            } catch (error) {
+                displayResponse('templateByIdResponse', { error: error.message }, 500);
+            }
+        }
+
+        // Get Template by Slug
+        async function getTemplateBySlug() {
+            try {
+                const templateSlug = document.getElementById('templateSlug').value;
+                if (!templateSlug) {
+                    alert('Please enter a Template Slug');
+                    return;
+                }
+                
+                const response = await fetch(`${getBaseUrl()}/api/templates/slug/${templateSlug}`);
+                const data = await response.json();
+                displayResponse('templateBySlugResponse', data, response.status);
+            } catch (error) {
+                displayResponse('templateBySlugResponse', { error: error.message }, 500);
+            }
+        }
+
+        // Select Template
+        async function selectTemplate() {
+            try {
+                const templateId = document.getElementById('selectTemplateId').value;
+                if (!templateId) {
+                    alert('Please enter a Template ID');
+                    return;
+                }
+                
+                const response = await fetch(`${getBaseUrl()}/api/templates/${templateId}/select`, {
+                    method: 'PATCH'
+                });
+                const data = await response.json();
+                displayResponse('selectResponse', data, response.status);
+            } catch (error) {
+                displayResponse('selectResponse', { error: error.message }, 500);
+            }
+        }
+
+        // Create Template
+        async function createTemplate() {
+            try {
+                const formData = new FormData();
+                
+                // Add text fields
+                formData.append('title', document.getElementById('createTitle').value);
+                formData.append('description', document.getElementById('createDescription').value);
+                formData.append('service', document.getElementById('createServiceId').value);
+                formData.append('category', document.getElementById('createCategoryId').value);
+                formData.append('industry', document.getElementById('createIndustry').value);
+                formData.append('designStyle', document.getElementById('createDesignStyle').value);
+                
+                const basePrice = document.getElementById('createBasePrice').value;
+                if (basePrice) formData.append('basePrice', basePrice);
+                
+                const demoUrl = document.getElementById('createDemoUrl').value;
+                if (demoUrl) formData.append('demoUrl', demoUrl);
+                
+                const tags = document.getElementById('createTags').value;
+                if (tags) formData.append('tags', tags);
+                
+                // Add image files
+                const images = document.getElementById('createImages').files;
+                for (let i = 0; i < images.length; i++) {
+                    formData.append('images', images[i]);
+                }
+                
+                const response = await fetch(`${getBaseUrl()}/api/templates`, {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+                displayResponse('createResponse', data, response.status);
+            } catch (error) {
+                displayResponse('createResponse', { error: error.message }, 500);
+            }
+        }
+         </script>
+</body>
+</html>

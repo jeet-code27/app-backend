@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Combo API Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold text-center mb-8">Combo API Test</h1>
+        
+        <!-- Create/Update Combo Form -->
+        <div class="bg-white rounded-lg shadow p-6 mb-8">
+            <h2 class="text-xl font-semibold mb-4">Create/Update Combo</h2>
+            
+            <form id="comboForm" class="space-y-4">
+                <input type="hidden" id="comboId">
+                
+                <!-- Basic Info -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Title *</label>
+                        <input type="text" id="title" class="w-full border rounded px-3 py-2" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Short Description</label>
+                        <input type="text" id="shortDescription" class="w-full border rounded px-3 py-2">
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-1">Description *</label>
+                    <textarea id="description" rows="3" class="w-full border rounded px-3 py-2" required></textarea>
+                </div>
+                
+                <!-- Services Selection -->
+                <div>
+                    <label class="block text-sm font-medium mb-1">Services *</label>
+                    <div id="servicesContainer" class="space-y-2">
+                        <div class="flex gap-2 items-center">
+                            <select id="serviceSelect" class="flex-1 border rounded px-3 py-2">
+                                <option value="">Select Service</option>
+                            </select>
+                            <input type="number" id="serviceQuantity" placeholder="Qty" min="1" value="1" class="w-20 border rounded px-3 py-2">
+                            <button type="button" onclick="addService()" class="bg-blue-500 text-white px-3 py-2 rounded">Add</button>
+                        </div>
+                    </div>
+                    <div id="selectedServices" class="mt-2 space-y-1"></div>
+                </div>
+                
+                <!-- Templates Selection -->
+                <div>
+                    <label class="block text-sm font-medium mb-1">Templates (Optional)</label>
+                    <div class="flex gap-2">
+                        <select id="templateSelect" class="flex-1 border rounded px-3 py-2">
+                            <option value="">Select Template</option>
+                        </select>
+                        <button type="button" onclick="addTemplate()" class="bg-green-500 text-white px-3 py-2 rounded">Add</button>
+                    </div>
+                    <div id="selectedTemplates" class="mt-2 space-y-1"></div>
+                </div>
+                
+                <!-- Pricing -->
+                <div class="grid grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Original Price *</label>
+                        <input type="number" id="originalPrice" class="w-full border rounded px-3 py-2" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Discounted Price *</label>
+                        <input type="number" id="discountedPrice" class="w-full border rounded px-3 py-2" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Delivery Time *</label>
+                        <div class="flex gap-1">
+                            <input type="number" id="deliveryTimeValue" class="w-16 border rounded px-2 py-2" required>
+                            <select id="deliveryTimeUnit" class="flex-1 border rounded px-2 py-2">
+                                <option value="days">Days</option>
+                                <option value="weeks">Weeks</option>
+                                <option value="months">Months</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Features -->
+                <div>
+                    <label class="block text-sm font-medium mb-1">Features</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="featureInput" placeholder="Add a feature" class="flex-1 border rounded px-3 py-2">
+                        <button type="button" onclick="addFeature()" class="bg-purple-500 text-white px-3 py-2 rounded">Add</button>
+                    </div>
+                    <div id="selectedFeatures" class="mt-2 space-y-1"></div>
+                </div>
+                
+                <!-- Status -->
+                <div class="flex gap-4">
+                    <label class="flex items-center">
+                        <input type="checkbox" id="isFeatured" class="mr-2">
+                        Featured
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" id="isPopular" class="mr-2">
+                        Popular
+                    </label>
+                </div>
+                
+                <!-- Form Actions -->
+                <div class="flex gap-3">
+                    <button type="submit" id="createBtn" class="bg-blue-600 text-white px-4 py-2 rounded">Create Combo</button>
+                    <button type="button" id="updateBtn" class="hidden bg-green-600 text-white px-4 py-2 rounded">Update Combo</button>
+                    <button type="button" onclick="resetForm()" class="bg-gray-500 text-white px-4 py-2 rounded">Reset</button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- API Test Buttons -->
+        <div class="bg-white rounded-lg shadow p-6 mb-8">
+            <h2 class="text-xl font-semibold mb-4">API Tests</h2>
+            <div class="grid grid-cols-3 gap-2">
+                <button onclick="loadFeaturedCombos()" class="bg-blue-500 text-white px-3 py-2 rounded text-sm">Featured Combos</button>
+                <button onclick="loadPopularCombos()" class="bg-green-500 text-white px-3 py-2 rounded text-sm">Popular Combos</button>
+                <button onclick="loadAllCombos()" class="bg-purple-500 text-white px-3 py-2 rounded text-sm">All Combos</button>
+            </div>
+        </div>
+        
+        <!-- Combos List -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-semibold mb-4">Combos List</h2>
+            <div id="combosContainer" class="space-y-4"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:5000/api';
+        let selectedServicesData = [];
+        let selectedTemplatesData = [];
+        let selectedFeaturesData = [];
+        let editingComboId = null;
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadServices();
+            loadTemplates();
+            loadAllCombos();
+            
+            document.getElementById('comboForm').addEventListener('submit', handleFormSubmit);
+        });
+        
+        // Load services for dropdown
+        async function loadServices() {
+            try {
+                const response = await axios.get(`${API_BASE_URL}/services`);
+                const services = response.data.data || [];
+                
+                const select = document.getElementById('serviceSelect');
+                select.innerHTML = '<option value="">Select Service</option>';
+                
+                services.forEach(service => {
+                    const option = document.createElement('option');
+                    option.value = service._id;
+                    option.textContent = service.title;
+                    option.dataset.category = service.category?.title || 'Unknown';
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading services:', error);
+            }
+        }
+        
+        // Load templates for dropdown
+        async function loadTemplates() {
+            try {
+                const response = await axios.get(`${API_BASE_URL}/templates`);
+                const templates = response.data.data || [];
+                
+                const select = document.getElementById('templateSelect');
+                select.innerHTML = '<option value="">Select Template</option>';
+                
+                templates.forEach(template => {
+                    const option = document.createElement('option');
+                    option.value = template._id;
+                    option.textContent = template.title;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading templates:', error);
+            }
+        }
+        
+        // Add service to combo
+        function addService() {
+            const select = document.getElementById('serviceSelect');
+            const quantity = document.getElementById('serviceQuantity').value || 1;
+            
+            if (!select.value) return;
+            
+            const serviceData = {
+                service: select.value,
+                quantity: parseInt(quantity),
+                title: select.options[select.selectedIndex].textContent,
+                category: select.options[select.selectedIndex].dataset.category
+            };
+            
+            // Check if already added
+            if (selectedServicesData.find(s => s.service === serviceData.service)) {
+                alert('Service already added');
+                return;
+            }
+            
+            selectedServicesData.push(serviceData);
+            updateSelectedServices();
+            
+            select.value = '';
+            document.getElementById('serviceQuantity').value = 1;
+        }
+        
+        // Add template to combo
+        function addTemplate() {
+            const select = document.getElementById('templateSelect');
+            
+            if (!select.value) return;
+            
+            const templateData = {
+                id: select.value,
+                title: select.options[select.selectedIndex].textContent
+            };
+            
+            // Check if already added
+            if (selectedTemplatesData.find(t => t.id === templateData.id)) {
+                alert('Template already added');
+                return;
+            }
+            
+            selectedTemplatesData.push(templateData);
+            updateSelectedTemplates();
+            
+            select.value = '';
+        }
+        
+        // Add feature
+        function addFeature() {
+            const input = document.getElementById('featureInput');
+            const feature = input.value.trim();
+            
+            if (!feature) return;
+            
+            selectedFeaturesData.push(feature);
+            updateSelectedFeatures();
+            
+            input.value = '';
+        }
+        
+        // Update UI for selected services
+        function updateSelectedServices() {
+            const container = document.getElementById('selectedServices');
+            container.innerHTML = '';
+            
+            selectedServicesData.forEach((service, index) => {
+                const div = document.createElement('div');
+                div.className = 'flex justify-between items-center bg-blue-50 p-2 rounded';
+                div.innerHTML = `
+                    <span>${service.title} (${service.category}) - Qty: ${service.quantity}</span>
+                    <button onclick="removeService(${index})" class="text-red-500 text-sm">Remove</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+        
+        // Update UI for selected templates
+        function updateSelectedTemplates() {
+            const container = document.getElementById('selectedTemplates');
+            container.innerHTML = '';
+            
+            selectedTemplatesData.forEach((template, index) => {
+                const div = document.createElement('div');
+                div.className = 'flex justify-between items-center bg-green-50 p-2 rounded';
+                div.innerHTML = `
+                    <span>${template.title}</span>
+                    <button onclick="removeTemplate(${index})" class="text-red-500 text-sm">Remove</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+        
+        // Update UI for selected features
+        function updateSelectedFeatures() {
+            const container = document.getElementById('selectedFeatures');
+            container.innerHTML = '';
+            
+            selectedFeaturesData.forEach((feature, index) => {
+                const div = document.createElement('div');
+                div.className = 'flex justify-between items-center bg-purple-50 p-2 rounded';
+                div.innerHTML = `
+                    <span>${feature}</span>
+                    <button onclick="removeFeature(${index})" class="text-red-500 text-sm">Remove</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+        
+        // Remove functions
+        function removeService(index) {
+            selectedServicesData.splice(index, 1);
+            updateSelectedServices();
+        }
+        
+        function removeTemplate(index) {
+            selectedTemplatesData.splice(index, 1);
+            updateSelectedTemplates();
+        }
+        
+        function removeFeature(index) {
+            selectedFeaturesData.splice(index, 1);
+            updateSelectedFeatures();
+        }
+        
+        // Handle form submission
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            
+            if (selectedServicesData.length === 0) {
+                alert('Please add at least one service');
+                return;
+            }
+            
+            const comboData = {
+                title: document.getElementById('title').value,
+                description: document.getElementById('description').value,
+                shortDescription: document.getElementById('shortDescription').value,
+                services: selectedServicesData.map(s => ({ service: s.service, quantity: s.quantity })),
+                templates: selectedTemplatesData.map(t => t.id),
+                originalPrice: parseFloat(document.getElementById('originalPrice').value),
+                discountedPrice: parseFloat(document.getElementById('discountedPrice').value),
+                deliveryTimeValue: parseInt(document.getElementById('deliveryTimeValue').value),
+                deliveryTimeUnit: document.getElementById('deliveryTimeUnit').value,
+                features: selectedFeaturesData,
+                isFeatured: document.getElementById('isFeatured').checked,
+                isPopular: document.getElementById('isPopular').checked
+            };
+            
+            try {
+                let response;
+                
+                if (editingComboId) {
+                    response = await axios.put(`${API_BASE_URL}/combos/${editingComboId}`, comboData);
+                    alert('Combo updated successfully!');
+                } else {
+                    response = await axios.post(`${API_BASE_URL}/combos`, comboData);
+                    alert('Combo created successfully!');
+                }
+                
+                resetForm();
+                loadAllCombos();
+            } catch (error) {
+                console.error('Error saving combo:', error);
+                let errorMessage = 'Failed to save combo';
+                
+                if (error.response?.data?.message) {
+                    errorMessage = error.response.data.message;
+                    if (error.response.data.errors) {
+                        errorMessage += '\\n' + error.response.data.errors.map(e => e.msg || e).join('\\n');
+                    }
+                }
+                
+                alert(errorMessage);
+            }
+        }
+        
+        // Load all combos
+        async function loadAllCombos() {
+            try {
+                const response = await axios.get(`${API_BASE_URL}/combos`);
+                displayCombos(response.data.data || [], 'All Combos');
+            } catch (error) {
+                console.error('Error loading combos:', error);
+            }
+        }
+        
+        // Load featured combos
+        async function loadFeaturedCombos() {
+            try {
+                const response = await axios.get(`${API_BASE_URL}/combos/featured`);
+                displayCombos(response.data.data || [], 'Featured Combos');
+            } catch (error) {
+                console.error('Error loading featured combos:', error);
+            }
+        }
+        
+        // Load popular combos
+        async function loadPopularCombos() {
+            try {
+                const response = await axios.get(`${API_BASE_URL}/combos/popular`);
+                displayCombos(response.data.data || [], 'Popular Combos');
+            } catch (error) {
+                console.error('Error loading popular combos:', error);
+            }
+        }
+        
+        // Display combos
+        function displayCombos(combos, title) {
+            const container = document.getElementById('combosContainer');
+            container.innerHTML = `<h3 class="font-semibold text-lg mb-4">${title}</h3>`;
+            
+            if (combos.length === 0) {
+                container.innerHTML += '<p class="text-gray-500">No combos found</p>';
+                return;
+            }
+            
+            combos.forEach(combo => {
+                const div = document.createElement('div');
+                div.className = 'border rounded p-4 bg-gray-50';
+                
+                const services = combo.services?.map(s => `${s.service?.title || 'Unknown'} (${s.quantity})`).join(', ') || 'No services';
+                const categories = combo.categories?.map(c => c.title).join(', ') || 'No categories';
+                const templates = combo.templates?.map(t => t.title).join(', ') || 'No templates';
+                
+                div.innerHTML = `
+                    <div class="flex justify-between items-start mb-2">
+                        <h4 class="font-semibold text-lg">${combo.title}</h4>
+                        <div class="flex gap-2">
+                            <button onclick="editCombo('${combo._id}')" class="bg-blue-500 text-white px-2 py-1 rounded text-sm">Edit</button>
+                            <button onclick="toggleCombo('${combo._id}')" class="bg-yellow-500 text-white px-2 py-1 rounded text-sm">Toggle</button>
+                            <button onclick="deleteCombo('${combo._id}')" class="bg-red-500 text-white px-2 py-1 rounded text-sm">Delete</button>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-2">${combo.description}</p>
+                    <div class="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                            <strong>Services:</strong> ${services}
+                        </div>
+                        <div>
+                            <strong>Categories:</strong> ${categories}
+                        </div>
+                        <div>
+                            <strong>Templates:</strong> ${templates}
+                        </div>
+                        <div>
+                            <strong>Price:</strong> ₹${combo.pricing?.discountedPrice} (was ₹${combo.pricing?.originalPrice})
+                        </div>
+                        <div>
+                            <strong>Delivery:</strong> ${combo.deliveryTime?.value} ${combo.deliveryTime?.unit}
+                        </div>
+                        <div>
+                            <strong>Status:</strong> 
+                            <span class="px-2 py-1 rounded text-xs ${combo.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                                ${combo.isActive ? 'Active' : 'Inactive'}
+                            </span>
+                            ${combo.isFeatured ? '<span class="ml-1 px-2 py-1 rounded text-xs bg-blue-100 text-blue-800">Featured</span>' : ''}
+                            ${combo.isPopular ? '<span class="ml-1 px-2 py-1 rounded text-xs bg-purple-100 text-purple-800">Popular</span>' : ''}
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(div);
+            }); 
+        }
+        
+        // Edit combo
+        async function editCombo(id) {
+            try {
+                const response = await axios.get(`${API_BASE_URL}/combos/${id}`);
+                const combo = response.data.data;
+                
+                // Fill form
+                document.getElementById('comboId').value = combo._id;
+                document.getElementById('title').value = combo.title;
+                document.getElementById('description').value = combo.description;
+                document.getElementById('shortDescription').value = combo.shortDescription || '';
+                document.getElementById('originalPrice').value = combo.pricing.originalPrice;
+                document.getElementById('discountedPrice').value = combo.pricing.discountedPrice;
+                document.getElementById('deliveryTimeValue').value = combo.deliveryTime.value;
+                document.getElementById('deliveryTimeUnit').value = combo.deliveryTime.unit;
+                document.getElementById('isFeatured').checked = combo.isFeatured;
+                document.getElementById('isPopular').checked = combo.isPopular;
+                
+                // Set selected services
+                selectedServicesData = combo.services.map(s => ({
+                    service: s.service._id,
+                    quantity: s.quantity,
+                    title: s.service.title,
+                    category: 'Unknown'
+                }));
+                updateSelectedServices();
+                
+                // Set selected templates
+                selectedTemplatesData = combo.templates.map(t => ({
+                    id: t._id,
+                    title: t.title
+                }));
+                updateSelectedTemplates();
+                
+                // Set selected features
+                selectedFeaturesData = [...combo.features];
+                updateSelectedFeatures();
+                
+                // Switch buttons
+                document.getElementById('createBtn').classList.add('hidden');
+                document.getElementById('updateBtn').classList.remove('hidden');
+                editingComboId = id;
+                
+                // Scroll to form
+                document.getElementById('comboForm').scrollIntoView({ behavior: 'smooth' });
+            } catch (error) {
+                console.error('Error loading combo for edit:', error);
+                alert('Failed to load combo for editing');
+            }
+        }
+        
+        // Toggle combo status
+        async function toggleCombo(id) {
+            try {
+                await axios.patch(`${API_BASE_URL}/combos/${id}/toggle-active`);
+                alert('Combo status toggled successfully');
+                loadAllCombos();
+            } catch (error) {
+                console.error('Error toggling combo:', error);
+                alert('Failed to toggle combo status');
+            }
+        }
+        
+        // Delete combo
+        async function deleteCombo(id) {
+            if (!confirm('Are you sure you want to delete this combo?')) return;
+            
+            try {
+                await axios.delete(`${API_BASE_URL}/combos/${id}`);
+                alert('Combo deleted successfully');
+                loadAllCombos();
+            } catch (error) {
+                console.error('Error deleting combo:', error);
+                alert('Failed to delete combo');
+            }
+        }
+        
+        // Reset form
+        function resetForm() {
+            document.getElementById('comboForm').reset();
+            selectedServicesData = [];
+            selectedTemplatesData = [];
+            selectedFeaturesData = [];
+            editingComboId = null;
+            
+            updateSelectedServices();
+            updateSelectedTemplates();
+            updateSelectedFeatures();
+            
+            document.getElementById('createBtn').classList.remove('hidden');
+            document.getElementById('updateBtn').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>

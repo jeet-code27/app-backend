@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Template Management Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#1F2937'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <h1 class="text-2xl font-bold text-gray-900">🎨 Template Management Dashboard</h1>
+                <div class="flex space-x-4">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800" id="serverStatus">
+                        🔴 Server Offline
+                    </span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+            <!-- Add/Edit Template Form -->
+            <div class="xl:col-span-1">
+                <div class="bg-white rounded-lg shadow-md p-6 sticky top-8">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-6 flex items-center" id="formTitle">
+                        ➕ Add New Template
+                    </h2>
+
+                    <form id="templateForm" class="space-y-4" enctype="multipart/form-data">
+                        <input type="hidden" id="templateId">
+                        
+                        <!-- Basic Information -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Template Title *</label>
+                            <input type="text" id="templateTitle" placeholder="e.g., Modern Restaurant Website" required
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Description *</label>
+                            <textarea id="templateDescription" placeholder="Detailed template description" required rows="3"
+                                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
+                        </div>
+
+                        <!-- Service & Category -->
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Service *</label>
+                                <select id="templateService" required
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                    <option value="">Select Service</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Category *</label>
+                                <select id="templateCategory" required
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                    <option value="">Select Category</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Industry & Design Style -->
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Industry *</label>
+                                <select id="templateIndustry" required
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                    <option value="">Select Industry</option>
+                                    <option value="doctor-clinic">Doctor/Clinic</option>
+                                    <option value="restaurant-cafe">Restaurant/Cafe</option>
+                                    <option value="hotel-resort">Hotel/Resort</option>
+                                    <option value="coaching-institute">Coaching Institute</option>
+                                    <option value="architect-interior">Architect/Interior</option>
+                                    <option value="salon-spa">Salon/Spa</option>
+                                    <option value="gym-fitness">Gym/Fitness</option>
+                                    <option value="real-estate">Real Estate</option>
+                                    <option value="fashion-boutique">Fashion Boutique</option>
+                                    <option value="event-planner">Event Planner</option>
+                                    <option value="photographer">Photographer</option>
+                                    <option value="lawyer-legal">Lawyer/Legal</option>
+                                    <option value="dentist">Dentist</option>
+                                    <option value="veterinary">Veterinary</option>
+                                    <option value="consultant">Consultant</option>
+                                    <option value="freelancer-portfolio">Freelancer Portfolio</option>
+                                    <option value="ecommerce">E-commerce</option>
+                                    <option value="startup">Startup</option>
+                                    <option value="corporate">Corporate</option>
+                                    <option value="ngo-charity">NGO/Charity</option>
+                                    <option value="educational">Educational</option>
+                                    <option value="automotive">Automotive</option>
+                                    <option value="technology">Technology</option>
+                                    <option value="healthcare">Healthcare</option>
+                                    <option value="finance">Finance</option>
+                                    <option value="travel-tourism">Travel/Tourism</option>
+                                    <option value="food-delivery">Food Delivery</option>
+                                    <option value="beauty-cosmetics">Beauty/Cosmetics</option>
+                                    <option value="jewelry">Jewelry</option>
+                                    <option value="construction">Construction</option>
+                                    <option value="agriculture">Agriculture</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Design Style *</label>
+                                <select id="templateDesignStyle" required
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                    <option value="">Select Style</option>
+                                    <option value="modern">Modern</option>
+                                    <option value="minimalist">Minimalist</option>
+                                    <option value="classic">Classic</option>
+                                    <option value="bold">Bold</option>
+                                    <option value="elegant">Elegant</option>
+                                    <option value="creative">Creative</option>
+                                    <option value="professional">Professional</option>
+                                    <option value="trendy">Trendy</option>
+                                    <option value="vintage">Vintage</option>
+                                    <option value="corporate">Corporate</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Pricing -->
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Base Price</label>
+                                <input type="number" id="templateBasePrice" placeholder="25000" min="0"
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Currency</label>
+                                <select id="templateCurrency"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                    <option value="INR">₹ INR</option>
+                                    <option value="USD">$ USD</option>
+                                    <option value="EUR">€ EUR</option>
+                                    <option value="GBP">£ GBP</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Technical Specs -->
+                        <div class="border-t pt-4">
+                            <h3 class="text-sm font-medium text-gray-700 mb-3">Technical Specifications</h3>
+                            <div class="grid grid-cols-2 gap-3 mb-3">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Pages</label>
+                                    <input type="number" id="templatePages" placeholder="5" min="1" value="1"
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Sort Order</label>
+                                    <input type="number" id="templateSortOrder" placeholder="0" min="0" value="0"
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-4 text-sm">
+                                <label class="flex items-center">
+                                    <input type="checkbox" id="templateResponsive" checked class="mr-2 text-blue-600">
+                                    <span>Responsive</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" id="templateCMS" class="mr-2 text-blue-600">
+                                    <span>Has CMS</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" id="templateEcommerce" class="mr-2 text-blue-600">
+                                    <span>E-commerce</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" id="templateBooking" class="mr-2 text-blue-600">
+                                    <span>Booking System</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" id="templateContactForm" checked class="mr-2 text-blue-600">
+                                    <span>Contact Form</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" id="templateGallery" class="mr-2 text-blue-600">
+                                    <span>Gallery</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" id="templateBlog" class="mr-2 text-blue-600">
+                                    <span>Blog</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Demo, Features & Tags -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Demo URL</label>
+                            <input type="url" id="templateDemoUrl" placeholder="https://demo.example.com"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Features</label>
+                            <input type="text" id="templateFeatures" placeholder="Modern Design, SEO Optimized, Mobile Friendly"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <p class="text-xs text-gray-500 mt-1">Separate features with commas</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Tags</label>
+                            <input type="text" id="templateTags" placeholder="restaurant, modern, responsive"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <p class="text-xs text-gray-500 mt-1">Separate tags with commas</p>
+                        </div>
+
+                        <!-- Images Upload -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Template Images</label>
+                            <input type="file" id="templateImages" accept="image/*" multiple
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <p class="text-xs text-gray-500 mt-1">Max 10 images, 5MB each, JPG/PNG/GIF</p>
+                        </div>
+
+                        <!-- Color Scheme -->
+                        <div class="border-t pt-4">
+                            <h3 class="text-sm font-medium text-gray-700 mb-3">Color Scheme (Optional)</h3>
+                            <div class="grid grid-cols-3 gap-2">
+                                <div>
+                                    <label class="block text-xs text-gray-600 mb-1">Primary</label>
+                                    <input type="color" id="templatePrimaryColor" 
+                                           class="w-full h-8 border border-gray-300 rounded cursor-pointer">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-gray-600 mb-1">Secondary</label>
+                                    <input type="color" id="templateSecondaryColor"
+                                           class="w-full h-8 border border-gray-300 rounded cursor-pointer">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-gray-600 mb-1">Accent</label>
+                                    <input type="color" id="templateAccentColor"
+                                           class="w-full h-8 border border-gray-300 rounded cursor-pointer">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Status Flags -->
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-700">Template Status</label>
+                            <div class="flex flex-wrap items-center gap-4">
+                                <label class="flex items-center">
+                                    <input type="checkbox" id="templateActive" checked class="mr-2 text-blue-600">
+                                    <span class="text-sm">Active</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" id="templateFeatured" class="mr-2 text-purple-600">
+                                    <span class="text-sm">Featured</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" id="templatePopular" class="mr-2 text-orange-600">
+                                    <span class="text-sm">Popular</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- SEO Section -->
+                        <div class="border-t pt-4">
+                            <h3 class="text-sm font-medium text-gray-700 mb-3">SEO Settings (Optional)</h3>
+                            <div class="space-y-3">
+                                <input type="text" id="templateMetaTitle" placeholder="Meta Title (60 chars max)" maxlength="60"
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                <textarea id="templateMetaDescription" placeholder="Meta Description (160 chars max)" maxlength="160" rows="2"
+                                          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
+                                <input type="text" id="templateMetaKeywords" placeholder="Meta Keywords (comma separated)"
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            </div>
+                        </div>
+
+                        <div class="flex space-x-3">
+                            <button type="submit" class="flex-1 bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 transition-colors font-medium" id="submitBtn">
+                                🚀 Create Template
+                            </button>
+                            <button type="button" onclick="resetForm()" class="px-4 py-3 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors font-medium">
+                                Reset
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Templates List -->
+            <div class="xl:col-span-2">
+                <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-semibold text-gray-900 flex items-center">
+                            📋 Templates List
+                        </h2>
+                        <div class="flex items-center space-x-3">
+                            <select id="filterService" class="px-3 py-1 border border-gray-300 rounded-md text-sm">
+                                <option value="">All Services</option>
+                            </select>
+                            <select id="filterIndustry" class="px-3 py-1 border border-gray-300 rounded-md text-sm">
+                                <option value="">All Industries</option>
+                            </select>
+                            <button onclick="loadTemplates()" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                🔄 Refresh
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="templatesList" class="space-y-4">
+                        <div class="text-center py-8 text-gray-500">
+                            Loading templates...
+                        </div>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div id="paginationContainer" class="mt-6 flex justify-center">
+                        <!-- Pagination will be inserted here -->
+                    </div>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                    <div class="bg-white p-4 rounded-lg shadow-md text-center">
+                        <div class="text-2xl font-bold text-blue-600" id="totalTemplates">0</div>
+                        <div class="text-sm text-gray-600">Total Templates</div>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow-md text-center">
+                        <div class="text-2xl font-bold text-green-600" id="activeTemplates">0</div>
+                        <div class="text-sm text-gray-600">Active Templates</div>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow-md text-center">
+                        <div class="text-2xl font-bold text-purple-600" id="featuredTemplates">0</div>
+                        <div class="text-sm text-gray-600">Featured Templates</div>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow-md text-center">
+                        <div class="text-2xl font-bold text-orange-600" id="popularTemplates">0</div>
+                        <div class="text-sm text-gray-600">Popular Templates</div>
+                    </div>
+                </div>
+
+                <!-- API Testing Section -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                        🧪 Quick API Tests
+                    </h3>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">
+                        <button onclick="testAPI('/api/templates')" class="bg-blue-100 hover:bg-blue-200 text-blue-800 p-2 rounded text-sm font-medium transition-colors">
+                            All Templates
+                        </button>
+                        <button onclick="testAPI('/api/templates/featured')" class="bg-purple-100 hover:bg-purple-200 text-purple-800 p-2 rounded text-sm font-medium transition-colors">
+                            Featured Templates
+                        </button>
+                        <button onclick="testAPI('/api/templates/popular')" class="bg-orange-100 hover:bg-orange-200 text-orange-800 p-2 rounded text-sm font-medium transition-colors">
+                            Popular Templates
+                        </button>
+                        <button onclick="testAPI('/api/services')" class="bg-green-100 hover:bg-green-200 text-green-800 p-2 rounded text-sm font-medium transition-colors">
+                            All Services
+                        </button>
+                        <button onclick="testAPI('/api/categories')" class="bg-yellow-100 hover:bg-yellow-200 text-yellow-800 p-2 rounded text-sm font-medium transition-colors">
+                            All Categories
+                        </button>
+                        <button onclick="testAPI('/api/templates/industry/restaurant-cafe')" class="bg-red-100 hover:bg-red-200 text-red-800 p-2 rounded text-sm font-medium transition-colors">
+                            Restaurant Templates
+                        </button>
+                    </div>
+
+                    <!-- Custom API Test -->
+                    <div class="mb-4">
+                        <div class="flex gap-2">
+                            <input type="text" id="customEndpoint" placeholder="/api/templates/slug/example-slug" 
+                                   class="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm">
+                            <button onclick="testCustomAPI()" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded text-sm font-medium">
+                                Test Custom
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- API Response Display -->
+                    <div id="apiResponse" class="bg-gray-100 p-4 rounded-lg min-h-32 max-h-64 overflow-y-auto text-sm">
+                        <p class="text-gray-500">Click any API test button to see the response here...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success/Error Messages -->
+    <div id="messageContainer" class="fixed top-4 right-4 z-50"></div>
+
+    <!-- Template Detail Modal -->
+    <div id="templateModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-40">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg max-w-4xl w-full max-h-screen overflow-y-auto">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-semibold">Template Details</h3>
+                        <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div id="modalContent">
+                        <!-- Template details will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:5000';
+        let currentPage = 1;
+        let totalPages = 1;
+        let isEditMode = false;
+
+        // Check server status on load
+        window.addEventListener('load', function() {
+            checkServerStatus();
+            loadOptions();
+            loadTemplates();
+            updateStats();
+        });
+
+        async function checkServerStatus() {
+            try {
+                const response = await fetch(`${API_BASE}/api/health`);
+                if (response.ok) {
+                    document.getElementById('serverStatus').innerHTML = '🟢 Server Online';
+                    document.getElementById('serverStatus').className = 'inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800';
+                }
+            } catch (error) {
+                document.getElementById('serverStatus').innerHTML = '🔴 Server Offline';
+                document.getElementById('serverStatus').className = 'inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800';
+            }
+        }
+
+        // Show messages
+        function showMessage(message, type = 'success') {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `alert ${type === 'success' ? 'bg-green-500' : 'bg-red-500'} text-white px-4 py-2 rounded-lg shadow-lg mb-2`;
+            messageDiv.textContent = message;
+            
+            document.getElementById('messageContainer').appendChild(messageDiv);
+            
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 3000);
+        }
+
+        // Load services and categories for dropdowns
+        async function loadOptions() {
+            try {
+                // Load services
+                const servicesResponse = await fetch(`${API_BASE}/api/services`);
+                const servicesData = await servicesResponse.json();
+                
+                if (servicesData.success) {
+                    const serviceSelects = [document.getElementById('templateService'), document.getElementById('filterService')];
+                    serviceSelects.forEach(select => {
+                        const defaultOption = select.id === 'templateService' ? 'Select Service' : 'All Services';
+                        select.innerHTML = `<option value="">${defaultOption}</option>`;
+                        servicesData.data.forEach(service => {
+                            const option = document.createElement('option');
+                            option.value = service._id;
+                            option.textContent = service.title;
+                            select.appendChild(option);
+                        });
+                    });
+                }
+
+                // Load categories
+                const categoriesResponse = await fetch(`${API_BASE}/api/categories`);
+                const categoriesData = await categoriesResponse.json();
+                
+                if (categoriesData.success) {
+                    const categorySelect = document.getElementById('templateCategory');
+                    categorySelect.innerHTML = '<option value="">Select Category</option>';
+                    categoriesData.data.forEach(category => {
+                        const option = document.createElement('option');
+                        option.value = category._id;
+                        option.textContent = category.title;
+                        categorySelect.appendChild(option);
+                    });
+                }
+
+                // Populate industry filter
+                const industryFilter = document.getElementById('filterIndustry');
+                const industries = [
+                    'doctor-clinic', 'restaurant-cafe', 'hotel-resort', 'coaching-institute',
+                    'architect-interior', 'salon-spa', 'gym-fitness', 'real-estate',
+                    'fashion-boutique', 'event-planner', 'photographer', 'lawyer-legal',
+                    'dentist', 'veterinary', 'consultant', 'freelancer-portfolio',
+                    'ecommerce', 'startup', 'corporate', 'ngo-charity', 'educational',
+                    'automotive', 'technology', 'healthcare', 'finance', 'travel-tourism',
+                    'food-delivery', 'beauty-cosmetics', 'jewelry', 'construction',
+                    'agriculture', 'other'
+                ];
+                
+                industries.forEach(industry => {
+                    const option = document.createElement('option');
+                    option.value = industry;
+                    option.textContent = industry.replace('-', '/').replace(/\b\w/g, l => l.toUpperCase());
+                    industryFilter.appendChild(option);
+                });
+
+            } catch (error) {
+                console.error('Error loading options:', error);
+            }
+        }
+
+        // Load templates with filtering and pagination
+        async function loadTemplates(page = 1) {
+            try {
+                currentPage = page;
+                const filterService = document.getElementById('filterService').value;
+                const filterIndustry = document.getElementById('filterIndustry').value;
+                
+                let url = `${API_BASE}/api/templates?page=${page}&limit=6`;
+                if (filterService) url += `&service=${filterService}`;
+                if (filterIndustry) url += `&industry=${filterIndustry}`;
+
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const templatesList = document.getElementById('templatesList');
+                    templatesList.innerHTML = '';
+                    
+                    if (data.data.length === 0) {
+                        templatesList.innerHTML = '<div class="text-center py-8 text-gray-500">No templates found</div>';
+                        return;
+                    }
+                    
+                    data.data.forEach(template => {
+                        const templateDiv = document.createElement('div');
+                        templateDiv.className = 'border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow';
+                        
+                       const currencySymbols = { 
+  INR: '₹', 
+  USD: '$', 
+  EUR: '€', 
+  GBP: '£' 
+};
+                        const currencySymbol = currencySymbols[template.pricing?.currency] || '₹';
+                        
+                        templateDiv.innerHTML = `
+                            <div class="flex gap-4">
+                                ${template.mainImage ? `
+                                    <div class="flex-shrink-0">
+                                        <img src="${template.mainImage.url}" alt="${template.title}" 
+                                             class="w-24 h-24 object-cover rounded-lg border cursor-pointer" 
+                                             onclick="viewTemplate('${template._id}')">
+                                    </div>
+                                ` : `
+                                    <div class="flex-shrink-0 w-24 h-24 bg-gray-100 rounded-lg border flex items-center justify-center cursor-pointer" onclick="viewTemplate('${template._id}')">
+                                        <span class="text-gray-400 text-xs">No Image</span>
+                                    </div>
+                                `}
+                                
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex justify-between items-start">
+                                        <div class="flex-1">
+                                            <h4 class="font-semibold text-gray-900 text-lg cursor-pointer hover:text-blue-600" onclick="viewTemplate('${template._id}')">${template.title}</h4>
+                                            <div class="flex items-center gap-2 mb-2">
+                                                <span class="text-sm text-blue-600 font-medium">${template.service?.title || 'N/A'}</span>
+                                                <span class="text-gray-400">•</span>
+                                                <span class="text-sm text-green-600">${template.category?.title || 'N/A'}</span>
+                                                <span class="text-gray-400">•</span>
+                                                <span class="text-sm text-purple-600">${(template.industry || '').replace('-', '/').replace(/\b\w/g, l => l.toUpperCase())}</span>
+                                            </div>
+                                            <p class="text-gray-600 text-sm mb-3">${template.description.substring(0, 150)}${template.description.length > 150 ? '...' : ''}</p>
+                                            
+                                            ${template.features && template.features.length > 0 ? `
+                                                <div class="flex flex-wrap gap-1 mb-3">
+                                                    ${template.features.slice(0, 3).map(feature => 
+                                                        `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">${feature}</span>`
+                                                    ).join('')}
+                                                    ${template.features.length > 3 ? `<span class="text-xs text-gray-500">+${template.features.length - 3} more</span>` : ''}
+                                                </div>
+                                            ` : ''}
+                                            
+                                            <div class="flex items-center space-x-4 text-sm mb-3">
+                                                ${template.pricing?.basePrice ? `<span class="font-bold text-green-600 text-lg">${currencySymbol}${template.pricing.basePrice.toLocaleString()}</span>` : ''}
+                                                <span class="text-gray-500">• ${template.designStyle} style</span>
+                                                <span class="text-gray-500">• ${template.views || 0} views</span>
+                                                <span class="text-gray-500">• ${template.selections || 0} selections</span>
+                                            </div>
+                                            
+                                            <div class="flex items-center space-x-2">
+                                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${template.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                                                    ${template.isActive ? '✅ Active' : '❌ Inactive'}
+                                                </span>
+                                                ${template.isFeatured ? '<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">⭐ Featured</span>' : ''}
+                                                ${template.isPopular ? '<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">🔥 Popular</span>' : ''}
+                                                ${template.techSpecs?.pages ? `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">${template.techSpecs.pages} pages</span>` : ''}
+                                            </div>
+                                        </div>
+                                        <div class="flex flex-col space-y-2 ml-4">
+                                            <button onclick="editTemplate('${template._id}')" 
+                                                    class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                                Edit
+                                            </button>
+                                            <button onclick="toggleTemplateStatus('${template._id}')" 
+                                                    class="text-orange-600 hover:text-orange-800 text-sm font-medium">
+                                                ${template.isActive ? 'Deactivate' : 'Activate'}
+                                            </button>
+                                            <button onclick="selectTemplate('${template._id}')" 
+                                                    class="text-green-600 hover:text-green-800 text-sm font-medium">
+                                                Select (+1)
+                                            </button>
+                                            <button onclick="deleteTemplate('${template._id}')" 
+                                                    class="text-red-600 hover:text-red-800 text-sm font-medium">
+                                                Delete
+                                            </button>
+                                            ${template.demoUrl ? `<a href="${template.demoUrl}" target="_blank" class="text-purple-600 hover:text-purple-800 text-sm font-medium">Demo</a>` : ''}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        templatesList.appendChild(templateDiv);
+                    });
+                    
+                    // Update pagination
+                    totalPages = data.pagination.totalPages;
+                    updatePagination(data.pagination);
+                }
+            } catch (error) {
+                showMessage('Error loading templates: ' + error.message, 'error');
+                document.getElementById('templatesList').innerHTML = '<div class="text-center py-8 text-red-500">Error loading templates</div>';
+            }
+        }
+
+        // Update pagination
+        function updatePagination(pagination) {
+            const container = document.getElementById('paginationContainer');
+            if (pagination.totalPages <= 1) {
+                container.innerHTML = '';
+                return;
+            }
+
+            let paginationHTML = '<div class="flex items-center space-x-2">';
+            
+            // Previous button
+            if (pagination.hasPrevPage) {
+                paginationHTML += `<button onclick="loadTemplates(${pagination.currentPage - 1})" class="px-3 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50">Previous</button>`;
+            }
+            
+            // Page numbers
+            for (let i = 1; i <= pagination.totalPages; i++) {
+                if (i === pagination.currentPage) {
+                    paginationHTML += `<button class="px-3 py-2 text-sm bg-blue-600 text-white rounded-md">${i}</button>`;
+                } else {
+                    paginationHTML += `<button onclick="loadTemplates(${i})" class="px-3 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50">${i}</button>`;
+                }
+            }
+            
+            // Next button
+            if (pagination.hasNextPage) {
+                paginationHTML += `<button onclick="loadTemplates(${pagination.currentPage + 1})" class="px-3 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50">Next</button>`;
+            }
+            
+            paginationHTML += '</div>';
+            container.innerHTML = paginationHTML;
+        }
+
+        // Filter templates
+        document.getElementById('filterService').addEventListener('change', () => loadTemplates(1));
+        document.getElementById('filterIndustry').addEventListener('change', () => loadTemplates(1));
+
+        // Update statistics
+        async function updateStats() {
+            try {
+                const [allResponse, featuredResponse, popularResponse] = await Promise.all([
+                    fetch(`${API_BASE}/api/templates`),
+                    fetch(`${API_BASE}/api/templates/featured`),
+                    fetch(`${API_BASE}/api/templates/popular`)
+                ]);
+                
+                const [allData, featuredData, popularData] = await Promise.all([
+                    allResponse.json(),
+                    featuredResponse.json(),
+                    popularResponse.json()
+                ]);
+                
+                if (allData.success) {
+                    document.getElementById('totalTemplates').textContent = allData.pagination?.totalItems || allData.data.length;
+                    const activeCount = allData.data.filter(t => t.isActive).length;
+                    document.getElementById('activeTemplates').textContent = activeCount;
+                }
+                
+                if (featuredData.success) {
+                    document.getElementById('featuredTemplates').textContent = featuredData.data.length;
+                }
+                
+                if (popularData.success) {
+                    document.getElementById('popularTemplates').textContent = popularData.data.length;
+                }
+            } catch (error) {
+                console.error('Error updating stats:', error);
+            }
+        }
+
+        // View template details
+        async function viewTemplate(id) {
+            try {
+                const response = await fetch(`${API_BASE}/api/templates/${id}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const template = data.data;
+                    const modalContent = document.getElementById('modalContent');
+                    
+                    modalContent.innerHTML = `
+                        <div class="space-y-6">
+                            <!-- Images Gallery -->
+                            ${template.images && template.images.length > 0 ? `
+                                <div>
+                                    <h4 class="font-semibold mb-3">Template Images</h4>
+                                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                        ${template.images.map((img, index) => `
+                                            <div class="relative">
+                                                <img src="${img.url}" alt="${img.alt || template.title}" 
+                                                     class="w-full h-32 object-cover rounded-lg border">
+                                                ${img.isMain ? '<span class="absolute top-2 left-2 bg-green-500 text-white text-xs px-2 py-1 rounded">Main</span>' : ''}
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                            ` : ''}
+                            
+                            <!-- Basic Info -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <h4 class="font-semibold mb-3">Basic Information</h4>
+                                    <div class="space-y-2 text-sm">
+                                        <div><span class="font-medium">Title:</span> ${template.title}</div>
+                                        <div><span class="font-medium">Slug:</span> ${template.slug}</div>
+                                        <div><span class="font-medium">Service:</span> ${template.service?.title}</div>
+                                        <div><span class="font-medium">Category:</span> ${template.category?.title}</div>
+                                        <div><span class="font-medium">Industry:</span> ${template.industry}</div>
+                                        <div><span class="font-medium">Design Style:</span> ${template.designStyle}</div>
+                                        ${template.demoUrl ? `<div><span class="font-medium">Demo:</span> <a href="${template.demoUrl}" target="_blank" class="text-blue-600 hover:underline">${template.demoUrl}</a></div>` : ''}
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <h4 class="font-semibold mb-3">Technical Specs</h4>
+                                    <div class="space-y-2 text-sm">
+                                        <div><span class="font-medium">Pages:</span> ${template.techSpecs?.pages || 1}</div>
+                                        <div><span class="font-medium">Responsive:</span> ${template.techSpecs?.isResponsive ? 'Yes' : 'No'}</div>
+                                        <div><span class="font-medium">CMS:</span> ${template.techSpecs?.hasCMS ? 'Yes' : 'No'}</div>
+                                        <div><span class="font-medium">E-commerce:</span> ${template.techSpecs?.hasEcommerce ? 'Yes' : 'No'}</div>
+                                        <div><span class="font-medium">Booking:</span> ${template.techSpecs?.hasBooking ? 'Yes' : 'No'}</div>
+                                        <div><span class="font-medium">Contact Form:</span> ${template.techSpecs?.hasContactForm ? 'Yes' : 'No'}</div>
+                                        <div><span class="font-medium">Gallery:</span> ${template.techSpecs?.hasGallery ? 'Yes' : 'No'}</div>
+                                        <div><span class="font-medium">Blog:</span> ${template.techSpecs?.hasBlog ? 'Yes' : 'No'}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Description -->
+                            <div>
+                                <h4 class="font-semibold mb-3">Description</h4>
+                                <p class="text-gray-700">${template.description}</p>
+                            </div>
+                            
+                            <!-- Features & Tags -->
+                            ${template.features && template.features.length > 0 ? `
+                                <div>
+                                    <h4 class="font-semibold mb-3">Features</h4>
+                                    <div class="flex flex-wrap gap-2">
+                                        ${template.features.map(feature => `<span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">${feature}</span>`).join('')}
+                                    </div>
+                                </div>
+                            ` : ''}
+                            
+                            ${template.tags && template.tags.length > 0 ? `
+                                <div>
+                                    <h4 class="font-semibold mb-3">Tags</h4>
+                                    <div class="flex flex-wrap gap-2">
+                                        ${template.tags.map(tag => `<span class="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm">${tag}</span>`).join('')}
+                                    </div>
+                                </div>
+                            ` : ''}
+                            
+                            <!-- Analytics -->
+                            <div class="grid grid-cols-3 gap-4 text-center">
+                                <div class="bg-blue-50 p-4 rounded-lg">
+                                    <div class="text-2xl font-bold text-blue-600">${template.views || 0}</div>
+                                    <div class="text-sm text-gray-600">Views</div>
+                                </div>
+                                <div class="bg-green-50 p-4 rounded-lg">
+                                    <div class="text-2xl font-bold text-green-600">${template.selections || 0}</div>
+                                    <div class="text-sm text-gray-600">Selections</div>
+                                </div>
+                                <div class="bg-purple-50 p-4 rounded-lg">
+                                    <div class="text-2xl font-bold text-purple-600">${template.sortOrder || 0}</div>
+                                    <div class="text-sm text-gray-600">Sort Order</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    document.getElementById('templateModal').classList.remove('hidden');
+                }
+            } catch (error) {
+                showMessage('Error loading template details: ' + error.message, 'error');
+            }
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('templateModal').classList.add('hidden');
+        }
+
+        // Edit template
+        async function editTemplate(id) {
+            try {
+                const response = await fetch(`${API_BASE}/api/templates/${id}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const template = data.data;
+                    isEditMode = true;
+                    
+                    // Populate form with template data
+                    document.getElementById('templateId').value = template._id;
+                    document.getElementById('templateTitle').value = template.title;
+                    document.getElementById('templateDescription').value = template.description;
+                    document.getElementById('templateService').value = template.service?._id || '';
+                    document.getElementById('templateCategory').value = template.category?._id || '';
+                    document.getElementById('templateIndustry').value = template.industry;
+                    document.getElementById('templateDesignStyle').value = template.designStyle;
+                    document.getElementById('templateBasePrice').value = template.pricing?.basePrice || '';
+                    document.getElementById('templateCurrency').value = template.pricing?.currency || 'INR';
+                    document.getElementById('templatePages').value = template.techSpecs?.pages || 1;
+                    document.getElementById('templateSortOrder').value = template.sortOrder || 0;
+                    document.getElementById('templateDemoUrl').value = template.demoUrl || '';
+                    document.getElementById('templateFeatures').value = template.features?.join(', ') || '';
+                    document.getElementById('templateTags').value = template.tags?.join(', ') || '';
+                    
+                    // Checkboxes
+                    document.getElementById('templateResponsive').checked = template.techSpecs?.isResponsive !== false;
+                    document.getElementById('templateCMS').checked = template.techSpecs?.hasCMS === true;
+                    document.getElementById('templateEcommerce').checked = template.techSpecs?.hasEcommerce === true;
+                    document.getElementById('templateBooking').checked = template.techSpecs?.hasBooking === true;
+                    document.getElementById('templateContactForm').checked = template.techSpecs?.hasContactForm !== false;
+                    document.getElementById('templateGallery').checked = template.techSpecs?.hasGallery === true;
+                    document.getElementById('templateBlog').checked = template.techSpecs?.hasBlog === true;
+                    document.getElementById('templateActive').checked = template.isActive !== false;
+                    document.getElementById('templateFeatured').checked = template.isFeatured === true;
+                    document.getElementById('templatePopular').checked = template.isPopular === true;
+                    
+                    // Color scheme
+                    if (template.colorScheme?.primary) document.getElementById('templatePrimaryColor').value = template.colorScheme.primary;
+                    if (template.colorScheme?.secondary) document.getElementById('templateSecondaryColor').value = template.colorScheme.secondary;
+                    if (template.colorScheme?.accent) document.getElementById('templateAccentColor').value = template.colorScheme.accent;
+                    
+                    // SEO
+                    document.getElementById('templateMetaTitle').value = template.seo?.metaTitle || '';
+                    document.getElementById('templateMetaDescription').value = template.seo?.metaDescription || '';
+                    document.getElementById('templateMetaKeywords').value = template.seo?.metaKeywords?.join(', ') || '';
+                    
+                    // Update form title and button
+                    document.getElementById('formTitle').innerHTML = '✏️ Edit Template';
+                    document.getElementById('submitBtn').innerHTML = '💾 Update Template';
+                    
+                    // Scroll to form
+                    document.getElementById('templateForm').scrollIntoView({ behavior: 'smooth' });
+                }
+            } catch (error) {
+                showMessage('Error loading template for editing: ' + error.message, 'error');
+            }
+        }
+
+        // Reset form
+        function resetForm() {
+            document.getElementById('templateForm').reset();
+            document.getElementById('templateId').value = '';
+            isEditMode = false;
+            
+            // Reset checkboxes to default
+            document.getElementById('templateResponsive').checked = true;
+            document.getElementById('templateContactForm').checked = true;
+            document.getElementById('templateActive').checked = true;
+            document.getElementById('templateCurrency').value = 'INR';
+            document.getElementById('templatePages').value = '1';
+            document.getElementById('templateSortOrder').value = '0';
+            
+            // Reset form title and button
+            document.getElementById('formTitle').innerHTML = '➕ Add New Template';
+            document.getElementById('submitBtn').innerHTML = '🚀 Create Template';
+        }
+
+        // Create/Update template
+        document.getElementById('templateForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            const templateId = document.getElementById('templateId').value;
+            
+            // Add all form fields to FormData
+            formData.append('title', document.getElementById('templateTitle').value);
+            formData.append('description', document.getElementById('templateDescription').value);
+            formData.append('service', document.getElementById('templateService').value);
+            formData.append('category', document.getElementById('templateCategory').value);
+            formData.append('industry', document.getElementById('templateIndustry').value);
+            formData.append('designStyle', document.getElementById('templateDesignStyle').value);
+            
+            const basePrice = document.getElementById('templateBasePrice').value;
+            if (basePrice) formData.append('basePrice', basePrice);
+            formData.append('currency', document.getElementById('templateCurrency').value);
+            
+            formData.append('pages', document.getElementById('templatePages').value);
+            formData.append('sortOrder', document.getElementById('templateSortOrder').value);
+            
+            const demoUrl = document.getElementById('templateDemoUrl').value;
+            if (demoUrl) formData.append('demoUrl', demoUrl);
+            
+            const features = document.getElementById('templateFeatures').value;
+            if (features) formData.append('features', features);
+            
+            const tags = document.getElementById('templateTags').value;
+            if (tags) formData.append('tags', tags);
+            
+            // Tech specs
+            formData.append('isResponsive', document.getElementById('templateResponsive').checked);
+            formData.append('hasCMS', document.getElementById('templateCMS').checked);
+            formData.append('hasEcommerce', document.getElementById('templateEcommerce').checked);
+            formData.append('hasBooking', document.getElementById('templateBooking').checked);
+            formData.append('hasContactForm', document.getElementById('templateContactForm').checked);
+            formData.append('hasGallery', document.getElementById('templateGallery').checked);
+            formData.append('hasBlog', document.getElementById('templateBlog').checked);
+            
+            // Status flags
+            formData.append('isActive', document.getElementById('templateActive').checked);
+            formData.append('isFeatured', document.getElementById('templateFeatured').checked);
+            formData.append('isPopular', document.getElementById('templatePopular').checked);
+            
+            // Color scheme
+            const primaryColor = document.getElementById('templatePrimaryColor').value;
+            const secondaryColor = document.getElementById('templateSecondaryColor').value;
+            const accentColor = document.getElementById('templateAccentColor').value;
+            if (primaryColor) formData.append('primaryColor', primaryColor);
+            if (secondaryColor) formData.append('secondaryColor', secondaryColor);
+            if (accentColor) formData.append('accentColor', accentColor);
+            
+            // SEO
+            const metaTitle = document.getElementById('templateMetaTitle').value;
+            const metaDescription = document.getElementById('templateMetaDescription').value;
+            const metaKeywords = document.getElementById('templateMetaKeywords').value;
+            if (metaTitle) formData.append('metaTitle', metaTitle);
+            if (metaDescription) formData.append('metaDescription', metaDescription);
+            if (metaKeywords) formData.append('metaKeywords', metaKeywords);
+            
+            // Add image files
+            const imageFiles = document.getElementById('templateImages').files;
+            for (let i = 0; i < imageFiles.length; i++) {
+                formData.append('images', imageFiles[i]);
+            }
+
+            try {
+                const url = isEditMode ? `${API_BASE}/api/templates/${templateId}` : `${API_BASE}/api/templates`;
+                const method = isEditMode ? 'PUT' : 'POST';
+                
+                const response = await fetch(url, {
+                    method: method,
+                    body: formData
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    showMessage(`Template ${isEditMode ? 'updated' : 'created'} successfully! 🎉`);
+                    resetForm();
+                    loadTemplates(currentPage);
+                    updateStats();
+                } else {
+                    showMessage('Error: ' + (data.message || data.errors?.[0]?.msg || 'Unknown error'), 'error');
+                }
+            } catch (error) {
+                showMessage(`Error ${isEditMode ? 'updating' : 'creating'} template: ` + error.message, 'error');
+            }
+        });
+
+        // Toggle template status
+        async function toggleTemplateStatus(id) {
+            try {
+                const response = await fetch(`${API_BASE}/api/templates/${id}/toggle-active`, {
+                    method: 'PATCH'
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    showMessage(data.message);
+                    loadTemplates(currentPage);
+                    updateStats();
+                } else {
+                    showMessage('Error: ' + data.message, 'error');
+                }
+            } catch (error) {
+                showMessage('Error toggling template status: ' + error.message, 'error');
+            }
+        }
+
+        // Select template (increment selections)
+        async function selectTemplate(id) {
+            try {
+                const response = await fetch(`${API_BASE}/api/templates/${id}/select`, {
+                    method: 'PATCH'
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    showMessage('Template selection recorded! 📈');
+                    loadTemplates(currentPage);
+                } else {
+                    showMessage('Error: ' + data.message, 'error');
+                }
+            } catch (error) {
+                showMessage('Error recording template selection: ' + error.message, 'error');
+            }
+        }
+
+        // Delete template
+        async function deleteTemplate(id) {
+            if (confirm('Are you sure you want to delete this template? This action cannot be undone and will also delete all associated images.')) {
+                try {
+                    const response = await fetch(`${API_BASE}/api/templates/${id}`, {
+                        method: 'DELETE'
+                    });
+
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        showMessage('Template deleted successfully! 🗑️');
+                        loadTemplates(currentPage);
+                        updateStats();
+                    } else {
+                        showMessage('Error: ' + data.message, 'error');
+                    }
+                } catch (error) {
+                    showMessage('Error deleting template: ' + error.message, 'error');
+                }
+            }
+        }
+
+        // Test API endpoints
+        async function testAPI(endpoint) {
+            try {
+                const response = await fetch(`${API_BASE}${endpoint}`);
+                const data = await response.json();
+                
+                document.getElementById('apiResponse').innerHTML = `
+                    <div class="mb-2">
+                        <span class="font-medium">Endpoint:</span> <code class="bg-gray-200 px-2 py-1 rounded text-xs">${endpoint}</code>
+                    </div>
+                    <div class="mb-2">
+                        <span class="font-medium">Status:</span> <span class="${response.ok ? 'text-green-600' : 'text-red-600'}">${response.status} ${response.statusText}</span>
+                    </div>
+                    <div class="mb-2">
+                        <span class="font-medium">Response Time:</span> <span class="text-blue-600">${new Date().toLocaleTimeString()}</span>
+                    </div>
+                    <div>
+                        <span class="font-medium">Response:</span>
+                        <pre class="bg-gray-50 p-3 rounded mt-2 text-xs overflow-x-auto max-h-48 overflow-y-auto">${JSON.stringify(data, null, 2)}</pre>
+                    </div>
+                `;
+            } catch (error) {
+                document.getElementById('apiResponse').innerHTML = `
+                    <div class="text-red-600">
+                        <span class="font-medium">Error:</span> ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        // Test custom API endpoint
+        async function testCustomAPI() {
+            const endpoint = document.getElementById('customEndpoint').value.trim();
+            if (!endpoint) {
+                showMessage('Please enter an endpoint to test', 'error');
+                return;
+            }
+            
+            if (!endpoint.startsWith('/api/')) {
+                showMessage('Endpoint should start with /api/', 'error');
+                return;
+            }
+            
+            await testAPI(endpoint);
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('templateModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Handle escape key for modal
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
