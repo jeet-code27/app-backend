@@ -13,8 +13,8 @@ const categoryRoutes = require("./routes/categoryRoutes");
 const serviceRoutes = require("./routes/serviceRoutes");
 const templateRoutes = require("./routes/templateRoutes");
 const comboRoutes = require("./routes/comboRoutes");
-const authRoutes = require('./routes/authRoutes');
-
+const authRoutes = require("./routes/authRoutes");
+const ai = require("./routes/chatRoutes");
 // Service request routes
 const serviceRequestRoutes = require("./routes/serviceRequestRoutes");
 // Security middleware
@@ -38,7 +38,6 @@ app.use(bodyParser.json());
 // Static files middleware for uploaded images
 app.use("/uploads", express.static("uploads"));
 
-
 // Database connection
 mongoose
   .connect(
@@ -59,8 +58,8 @@ app.use("/api/services", serviceRoutes);
 app.use("/api/templates", templateRoutes);
 app.use("/api/combos", comboRoutes);
 app.use("/api/service-requests", serviceRequestRoutes);
-app.use('/api/auth', authRoutes);
-
+app.use("/api/auth", authRoutes);
+app.use("/api/chat", ai);
 // Health check endpoint
 app.get("/api/health", (req, res) => {
   res.status(200).json({
@@ -112,6 +111,7 @@ app.listen(PORT, () => {
   console.log(`🛍️ Services API: http://localhost:${PORT}/api/combos`);
   console.log(`🛍️ Services API: http://localhost:${PORT}/api/service-requests`);
   console.log(`🛍️ Services API: http://localhost:${PORT}/api/careers`);
+  console.log(`🚀 Virtual Assistant running at http://localhost:${PORT}/api/chat`);
 });
 
 module.exports = app;
