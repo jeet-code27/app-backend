@@ -1,46 +1,48 @@
-const Template = require('../models/Template');
-const Service = require('../models/Service');
-const Category = require('../models/Category');
-const { validationResult } = require('express-validator');
-const cloudinary = require('cloudinary').v2;
+const Template = require("../models/Template");
+const Service = require("../models/Service");
+const Category = require("../models/Category");
+const { validationResult } = require("express-validator");
+const cloudinary = require("cloudinary").v2;
 
 // Configure Cloudinary
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
 // Helper function to upload image to Cloudinary
-const uploadToCloudinary = (file, folder = 'templates') => {
+const uploadToCloudinary = (file, folder = "templates") => {
   return new Promise((resolve, reject) => {
-    cloudinary.uploader.upload_stream(
-      {
-        resource_type: 'image',
-        folder: folder,
-        transformation: [
-          { width: 1200, height: 900, crop: 'limit' },
-          { quality: 'auto' },
-          { fetch_format: 'auto' }
-        ]
-      },
-      (error, result) => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve({
-            publicId: result.public_id,
-            url: result.secure_url,
-            filename: result.original_filename || file.originalname,
-            mimetype: file.mimetype,
-            size: file.size,
-            width: result.width,
-            height: result.height,
-            alt: ''
-          });
+    cloudinary.uploader
+      .upload_stream(
+        {
+          resource_type: "image",
+          folder: folder,
+          transformation: [
+            { width: 1200, height: 900, crop: "limit" },
+            { quality: "auto" },
+            { fetch_format: "auto" },
+          ],
+        },
+        (error, result) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve({
+              publicId: result.public_id,
+              url: result.secure_url,
+              filename: result.original_filename || file.originalname,
+              mimetype: file.mimetype,
+              size: file.size,
+              width: result.width,
+              height: result.height,
+              alt: "",
+            });
+          }
         }
-      }
-    ).end(file.buffer);
+      )
+      .end(file.buffer);
   });
 };
 
@@ -51,7 +53,7 @@ const deleteFromCloudinary = async (publicId) => {
       await cloudinary.uploader.destroy(publicId);
     }
   } catch (error) {
-    console.error('Error deleting image from Cloudinary:', error);
+    console.error("Error deleting image from Cloudinary:", error);
   }
 };
 
@@ -60,30 +62,30 @@ const deleteFromCloudinary = async (publicId) => {
 // @access  Public
 const getAllTemplates = async (req, res) => {
   try {
-    const { 
-      page = 1, 
-      limit = 12, 
+    const {
+      page = 1,
+      limit = 12,
       category,
       service,
       isActive,
       isFeatured,
-      search 
+      search,
     } = req.query;
 
     // Build filter object
     const filter = {};
     if (category) filter.category = category;
     if (service) filter.service = service;
-    if (isActive !== undefined) filter.isActive = isActive === 'true';
-    if (isFeatured !== undefined) filter.isFeatured = isFeatured === 'true';
-    
+    if (isActive !== undefined) filter.isActive = isActive === "true";
+    if (isFeatured !== undefined) filter.isFeatured = isFeatured === "true";
+
     if (search) {
       filter.$text = { $search: search };
     }
 
     const templates = await Template.find(filter)
-      .populate('category', 'title slug')
-      .populate('service', 'title slug')
+      .populate("category", "title slug")
+      .populate("service", "title slug")
       .sort({ createdAt: -1 })
       .limit(limit * 1)
       .skip((page - 1) * limit);
@@ -97,14 +99,14 @@ const getAllTemplates = async (req, res) => {
         currentPage: parseInt(page),
         totalPages: Math.ceil(total / limit),
         totalItems: total,
-        itemsPerPage: parseInt(limit)
-      }
+        itemsPerPage: parseInt(limit),
+      },
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Error fetching templates',
-      error: error.message
+      message: "Error fetching templates",
+      error: error.message,
     });
   }
 };
@@ -118,7 +120,10 @@ const getTemplatesByCategory = async (req, res) => {
     const { page = 1, limit = 12 } = req.query;
 
     const templates = await Template.getByCategory(categoryId, { page, limit });
-    const total = await Template.countDocuments({ category: categoryId, isActive: true });
+    const total = await Template.countDocuments({
+      category: categoryId,
+      isActive: true,
+    });
 
     res.status(200).json({
       success: true,
@@ -127,14 +132,14 @@ const getTemplatesByCategory = async (req, res) => {
         currentPage: parseInt(page),
         totalPages: Math.ceil(total / limit),
         totalItems: total,
-        itemsPerPage: parseInt(limit)
-      }
+        itemsPerPage: parseInt(limit),
+      },
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Error fetching templates by category',
-      error: error.message
+      message: "Error fetching templates by category",
+      error: error.message,
     });
   }
 };
@@ -148,7 +153,10 @@ const getTemplatesByService = async (req, res) => {
     const { page = 1, limit = 12 } = req.query;
 
     const templates = await Template.getByService(serviceId, { page, limit });
-    const total = await Template.countDocuments({ service: serviceId, isActive: true });
+    const total = await Template.countDocuments({
+      service: serviceId,
+      isActive: true,
+    });
 
     res.status(200).json({
       success: true,
@@ -157,14 +165,14 @@ const getTemplatesByService = async (req, res) => {
         currentPage: parseInt(page),
         totalPages: Math.ceil(total / limit),
         totalItems: total,
-        itemsPerPage: parseInt(limit)
-      }
+        itemsPerPage: parseInt(limit),
+      },
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Error fetching templates by service',
-      error: error.message
+      message: "Error fetching templates by service",
+      error: error.message,
     });
   }
 };
@@ -175,21 +183,23 @@ const getTemplatesByService = async (req, res) => {
 const getServicesByCategory = async (req, res) => {
   try {
     const { categoryId } = req.params;
-    
-    const services = await Service.find({ 
-      category: categoryId, 
-      isActive: true 
-    }).select('title _id').sort({ title: 1 });
+
+    const services = await Service.find({
+      category: categoryId,
+      isActive: true,
+    })
+      .select("title _id")
+      .sort({ title: 1 });
 
     res.status(200).json({
       success: true,
-      data: services
+      data: services,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Error fetching services',
-      error: error.message
+      message: "Error fetching services",
+      error: error.message,
     });
   }
 };
@@ -201,16 +211,16 @@ const getFeaturedTemplates = async (req, res) => {
   try {
     const { limit = 8 } = req.query;
     const templates = await Template.getFeaturedTemplates(parseInt(limit));
-    
+
     res.status(200).json({
       success: true,
-      data: templates
+      data: templates,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Error fetching featured templates',
-      error: error.message
+      message: "Error fetching featured templates",
+      error: error.message,
     });
   }
 };
@@ -222,13 +232,13 @@ const getTemplateById = async (req, res) => {
   try {
     const { id } = req.params;
     const template = await Template.findById(id)
-      .populate('category', 'title slug')
-      .populate('service', 'title slug');
+      .populate("category", "title slug")
+      .populate("service", "title slug");
 
     if (!template) {
       return res.status(404).json({
         success: false,
-        message: 'Template not found'
+        message: "Template not found",
       });
     }
 
@@ -237,13 +247,13 @@ const getTemplateById = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      data: template
+      data: template,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Error fetching template',
-      error: error.message
+      message: "Error fetching template",
+      error: error.message,
     });
   }
 };
@@ -255,13 +265,13 @@ const getTemplateBySlug = async (req, res) => {
   try {
     const { slug } = req.params;
     const template = await Template.findOne({ slug, isActive: true })
-      .populate('category', 'title slug')
-      .populate('service', 'title slug');
+      .populate("category", "title slug")
+      .populate("service", "title slug");
 
     if (!template) {
       return res.status(404).json({
         success: false,
-        message: 'Template not found'
+        message: "Template not found",
       });
     }
 
@@ -270,13 +280,13 @@ const getTemplateBySlug = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      data: template
+      data: template,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Error fetching template',
-      error: error.message
+      message: "Error fetching template",
+      error: error.message,
     });
   }
 };
@@ -291,8 +301,8 @@ const createTemplate = async (req, res) => {
     if (!errors.isEmpty()) {
       return res.status(400).json({
         success: false,
-        message: 'Validation errors',
-        errors: errors.array()
+        message: "Validation errors",
+        errors: errors.array(),
       });
     }
 
@@ -303,26 +313,26 @@ const createTemplate = async (req, res) => {
       service,
       isActive,
       isFeatured,
-      startingPrice
+      startingPrice,
     } = req.body;
 
     // Verify category and service exist
     const [categoryExists, serviceExists] = await Promise.all([
       Category.findById(category),
-      Service.findById(service)
+      Service.findById(service),
     ]);
 
     if (!categoryExists) {
       return res.status(400).json({
         success: false,
-        message: 'Invalid category ID'
+        message: "Invalid category ID",
       });
     }
 
     if (!serviceExists) {
       return res.status(400).json({
         success: false,
-        message: 'Invalid service ID'
+        message: "Invalid service ID",
       });
     }
 
@@ -330,7 +340,7 @@ const createTemplate = async (req, res) => {
     if (serviceExists.category.toString() !== category) {
       return res.status(400).json({
         success: false,
-        message: 'Service does not belong to selected category'
+        message: "Service does not belong to selected category",
       });
     }
 
@@ -340,26 +350,31 @@ const createTemplate = async (req, res) => {
       description,
       category,
       service,
-      isActive: isActive !== undefined ? isActive === 'true' : true,
-      isFeatured: isFeatured === 'true',
-      startingPrice: startingPrice !== undefined ? startingPrice : 0
+      isActive: isActive !== undefined ? isActive === "true" : true,
+      isFeatured: isFeatured === "true",
+      pricing: {
+        startingPrice: startingPrice !== undefined ? Number(startingPrice) : 0,
+      },
     };
 
     // Handle main image upload
     if (req.files?.mainImage?.[0]) {
       try {
-        const mainImageResult = await uploadToCloudinary(req.files.mainImage[0], 'templates/main');
+        const mainImageResult = await uploadToCloudinary(
+          req.files.mainImage[0],
+          "templates/main"
+        );
         templateData.mainImage = {
           publicId: mainImageResult.publicId,
           url: mainImageResult.url,
           filename: mainImageResult.filename,
-          alt: title
+          alt: title,
         };
       } catch (error) {
         return res.status(500).json({
           success: false,
-          message: 'Error uploading main image',
-          error: error.message
+          message: "Error uploading main image",
+          error: error.message,
         });
       }
     }
@@ -367,14 +382,16 @@ const createTemplate = async (req, res) => {
     // Handle additional images upload
     if (req.files?.images) {
       try {
-        const imagePromises = req.files.images.map(file => uploadToCloudinary(file, 'templates/gallery'));
+        const imagePromises = req.files.images.map((file) =>
+          uploadToCloudinary(file, "templates/gallery")
+        );
         const uploadedImages = await Promise.all(imagePromises);
         templateData.images = uploadedImages;
       } catch (error) {
         return res.status(500).json({
           success: false,
-          message: 'Error uploading images',
-          error: error.message
+          message: "Error uploading images",
+          error: error.message,
         });
       }
     }
@@ -384,27 +401,27 @@ const createTemplate = async (req, res) => {
 
     // Populate references for response
     await template.populate([
-      { path: 'category', select: 'title slug' },
-      { path: 'service', select: 'title slug' }
+      { path: "category", select: "title slug" },
+      { path: "service", select: "title slug" },
     ]);
 
     res.status(201).json({
       success: true,
-      message: 'Template created successfully',
-      data: template
+      message: "Template created successfully",
+      data: template,
     });
   } catch (error) {
     if (error.code === 11000) {
       return res.status(400).json({
         success: false,
-        message: 'Template with this title already exists'
+        message: "Template with this title already exists",
       });
     }
 
     res.status(500).json({
       success: false,
-      message: 'Error creating template',
-      error: error.message
+      message: "Error creating template",
+      error: error.message,
     });
   }
 };
@@ -418,18 +435,18 @@ const updateTemplate = async (req, res) => {
     if (!errors.isEmpty()) {
       return res.status(400).json({
         success: false,
-        message: 'Validation errors',
-        errors: errors.array()
+        message: "Validation errors",
+        errors: errors.array(),
       });
     }
 
     const { id } = req.params;
     const template = await Template.findById(id);
-    
+
     if (!template) {
       return res.status(404).json({
         success: false,
-        message: 'Template not found'
+        message: "Template not found",
       });
     }
 
@@ -440,7 +457,7 @@ const updateTemplate = async (req, res) => {
       service,
       startingPrice,
       isActive,
-      isFeatured
+      isFeatured,
     } = req.body;
 
     // Verify category and service if being updated
@@ -449,7 +466,7 @@ const updateTemplate = async (req, res) => {
       if (!categoryExists) {
         return res.status(400).json({
           success: false,
-          message: 'Invalid category ID'
+          message: "Invalid category ID",
         });
       }
     }
@@ -459,7 +476,7 @@ const updateTemplate = async (req, res) => {
       if (!serviceExists) {
         return res.status(400).json({
           success: false,
-          message: 'Invalid service ID'
+          message: "Invalid service ID",
         });
       }
 
@@ -468,7 +485,7 @@ const updateTemplate = async (req, res) => {
       if (serviceExists.category.toString() !== categoryToCheck.toString()) {
         return res.status(400).json({
           success: false,
-          message: 'Service does not belong to selected category'
+          message: "Service does not belong to selected category",
         });
       }
     }
@@ -478,10 +495,14 @@ const updateTemplate = async (req, res) => {
     template.description = description || template.description;
     template.category = category || template.category;
     template.service = service || template.service;
-    template.startingPrice = startingPrice !== undefined ? startingPrice : template.startingPrice;
-    te
-    template.isActive = isActive !== undefined ? isActive === 'true' : template.isActive;
-    template.isFeatured = isFeatured === 'true';
+    template.pricing = template.pricing || {};
+    template.pricing.startingPrice =
+      startingPrice !== undefined
+        ? Number(startingPrice)
+        : template.pricing.startingPrice;
+    template.isActive =
+      isActive !== undefined ? isActive === "true" : template.isActive;
+    template.isFeatured = isFeatured === "true";
 
     // Handle main image update
     if (req.files?.mainImage?.[0]) {
@@ -491,18 +512,21 @@ const updateTemplate = async (req, res) => {
           await deleteFromCloudinary(template.mainImage.publicId);
         }
 
-        const mainImageResult = await uploadToCloudinary(req.files.mainImage[0], 'templates/main');
+        const mainImageResult = await uploadToCloudinary(
+          req.files.mainImage[0],
+          "templates/main"
+        );
         template.mainImage = {
           publicId: mainImageResult.publicId,
           url: mainImageResult.url,
           filename: mainImageResult.filename,
-          alt: template.title
+          alt: template.title,
         };
       } catch (error) {
         return res.status(500).json({
           success: false,
-          message: 'Error uploading main image',
-          error: error.message
+          message: "Error uploading main image",
+          error: error.message,
         });
       }
     }
@@ -512,45 +536,49 @@ const updateTemplate = async (req, res) => {
       try {
         // Delete old images
         if (template.images && template.images.length > 0) {
-          const deletePromises = template.images.map(img => deleteFromCloudinary(img.publicId));
+          const deletePromises = template.images.map((img) =>
+            deleteFromCloudinary(img.publicId)
+          );
           await Promise.all(deletePromises);
         }
 
-        const imagePromises = req.files.images.map(file => uploadToCloudinary(file, 'templates/gallery'));
+        const imagePromises = req.files.images.map((file) =>
+          uploadToCloudinary(file, "templates/gallery")
+        );
         const uploadedImages = await Promise.all(imagePromises);
         template.images = uploadedImages;
       } catch (error) {
         return res.status(500).json({
           success: false,
-          message: 'Error uploading images',
-          error: error.message
+          message: "Error uploading images",
+          error: error.message,
         });
       }
     }
 
     await template.save();
     await template.populate([
-      { path: 'category', select: 'title slug' },
-      { path: 'service', select: 'title slug' }
+      { path: "category", select: "title slug" },
+      { path: "service", select: "title slug" },
     ]);
 
     res.status(200).json({
       success: true,
-      message: 'Template updated successfully',
-      data: template
+      message: "Template updated successfully",
+      data: template,
     });
   } catch (error) {
     if (error.code === 11000) {
       return res.status(400).json({
         success: false,
-        message: 'Template with this title already exists'
+        message: "Template with this title already exists",
       });
     }
 
     res.status(500).json({
       success: false,
-      message: 'Error updating template',
-      error: error.message
+      message: "Error updating template",
+      error: error.message,
     });
   }
 };
@@ -566,26 +594,28 @@ const toggleTemplateActive = async (req, res) => {
     if (!template) {
       return res.status(404).json({
         success: false,
-        message: 'Template not found'
+        message: "Template not found",
       });
     }
 
     await template.toggleActive();
     await template.populate([
-      { path: 'category', select: 'title slug' },
-      { path: 'service', select: 'title slug' }
+      { path: "category", select: "title slug" },
+      { path: "service", select: "title slug" },
     ]);
 
     res.status(200).json({
       success: true,
-      message: `Template ${template.isActive ? 'activated' : 'deactivated'} successfully`,
-      data: template
+      message: `Template ${
+        template.isActive ? "activated" : "deactivated"
+      } successfully`,
+      data: template,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Error toggling template status',
-      error: error.message
+      message: "Error toggling template status",
+      error: error.message,
     });
   }
 };
@@ -601,7 +631,7 @@ const selectTemplate = async (req, res) => {
     if (!template) {
       return res.status(404).json({
         success: false,
-        message: 'Template not found'
+        message: "Template not found",
       });
     }
 
@@ -609,17 +639,17 @@ const selectTemplate = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: 'Template selection recorded',
+      message: "Template selection recorded",
       data: {
         id: template._id,
-        selections: template.selections
-      }
+        selections: template.selections,
+      },
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Error recording template selection',
-      error: error.message
+      message: "Error recording template selection",
+      error: error.message,
     });
   }
 };
@@ -635,7 +665,7 @@ const deleteTemplate = async (req, res) => {
     if (!template) {
       return res.status(404).json({
         success: false,
-        message: 'Template not found'
+        message: "Template not found",
       });
     }
 
@@ -646,7 +676,9 @@ const deleteTemplate = async (req, res) => {
 
     // Delete additional images from Cloudinary
     if (template.images && template.images.length > 0) {
-      const deletePromises = template.images.map(img => deleteFromCloudinary(img.publicId));
+      const deletePromises = template.images.map((img) =>
+        deleteFromCloudinary(img.publicId)
+      );
       await Promise.all(deletePromises);
     }
 
@@ -654,13 +686,13 @@ const deleteTemplate = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: 'Template deleted successfully'
+      message: "Template deleted successfully",
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Error deleting template',
-      error: error.message
+      message: "Error deleting template",
+      error: error.message,
     });
   }
 };
@@ -677,5 +709,5 @@ module.exports = {
   updateTemplate,
   toggleTemplateActive,
   selectTemplate,
-  deleteTemplate
+  deleteTemplate,
 };
