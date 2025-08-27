@@ -41,7 +41,11 @@ User: [Still explicit]
 You: "I can’t continue this conversation. Reach out again if you’d like to discuss services. Goodbye."  
 
 Now reply as Ananya, keeping answers short, natural, and human-like:
-\${message}
+
+
+
+
+'user message is: ${message}
 `;
 
 
