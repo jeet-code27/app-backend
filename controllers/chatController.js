@@ -2,50 +2,129 @@ require("dotenv").config();
 const axios = require("axios");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
-// Initialize Gemini
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-// Main chat controller
+// ======================
+// Session store with 15-minute memory
+// ======================
+const sessions = {};
+const SESSION_TTL = 15 * 60 * 1000; // 15 minutes
+
+function getSession(sessionId) {
+  if (!sessionId) return null;
+
+  const now = Date.now();
+  if (!sessions[sessionId]) {
+    sessions[sessionId] = { messages: [], lastActive: now };
+  } else if (now - sessions[sessionId].lastActive > SESSION_TTL) {
+    // Session expired
+    sessions[sessionId] = { messages: [], lastActive: now };
+  }
+  sessions[sessionId].lastActive = now;
+  return sessions[sessionId];
+}
+
+// ======================
+// Chat controller
+// ======================
 const chatWithAssistant = async (req, res) => {
   try {
-    const { message } = req.body;
-    if (!message || !message.trim()) {
+    const { message, sessionId } = req.body;
+
+    if (!message || !message.trim())
       return res.json({ reply: "Please type a message to chat with Ananya." });
-    }
 
-    // Try GPT first
-    let reply = await callGptModel(message);
+    if (!sessionId)
+      return res.status(400).json({ error: "Session ID is required" });
 
-    // Fallback to Gemini if GPT fails
-    if (!reply || !reply.trim()) {
-      reply = await callGeminiFlash(message);
-    }
+    const session = getSession(sessionId);
 
-    res.json({ reply: reply.trim() });
+    // Save user message
+    session.messages.push({
+      role: "user",
+      content: message.trim(),
+    });
+
+    // Build previousMessages string for prompt
+    const previousMessages = session.messages
+      .map((m) => `${m.role === "user" ? "User" : "Ananya"}: ${m.content}`)
+      .join("\n");
+
+    // 1️⃣ Try local responses first
+    let botText = getLocalResponse(message);
+
+    // 2️⃣ Fallback to GPT/Gemini if local response is null
+    if (!botText) botText = await callGptModel(message, previousMessages);
+    if (!botText || !botText.trim())
+      botText = await callGeminiFlash(message, previousMessages);
+
+    // Save AI response to session
+    session.messages.push({
+      role: "assistant",
+      content: botText.trim(),
+    });
+
+    res.json({ reply: botText.trim() });
   } catch (err) {
     console.error("❌ Chat Assistant Error:", err);
     res.status(500).json({ error: "Chat Assistant failed." });
   }
 };
 
+// ======================
+// Local fallback responses
+// ======================
+function getLocalResponse(text) {
+  const t = text.toLowerCase();
+  if (/(hello|hi|hey)/.test(t))
+    return "👋 Welcome to SEOcial Media Solutions! How can I assist you today?";
+  if (/(help|services|offer)/.test(t))
+    return "We offer SEO, Web/App Development, Content & Video services. Which one interests you?";
+  if (/(seo|search engine optimization)/.test(t))
+    return "🔍 Our SEO services include On-Page, Off-Page, Technical, Local, Ecommerce, and International SEO 🌍.";
+  if (/(front-end|frontend|ui|ux)/.test(t))
+    return "🎨 Front-End: Modern, responsive interfaces with React, Next.js, Tailwind CSS.";
+  if (/(back-end|backend|server|api|database)/.test(t))
+    return "🖥️ Back-End: APIs, server logic, databases, authentication, scalable solutions.";
+  if (/(full-stack|complete web app)/.test(t))
+    return "💡 Full-Stack: Complete web & mobile solutions end-to-end.";
+  if (/(app|mobile|android|ios)/.test(t))
+    return "📱 Mobile App Development: Android & iOS apps tailored for your business.";
+  if (/(blog|content|writing)/.test(t))
+    return "📝 Content & Blogs: Articles, social media posts, email campaigns, creative strategies.";
+  if (/(video|animation|media)/.test(t))
+    return "🎬 Video & Animation: Corporate, promo, social media, explainer videos.";
+  if (/(contact|reach|email|phone)/.test(t))
+    return "📞 Reach us at contact@seocialmedia.com or +91-9876543210.";
+  if (/(time)/.test(t))
+    return `⏰ Current time: ${new Date().toLocaleTimeString()}`;
+  if (/(date|today)/.test(t))
+    return `📅 Today is ${new Date().toLocaleDateString()}`;
+  if (/(thanks|thank you)/.test(t))
+    return "🙏 You're welcome! Happy to help 😊";
+  if (/(bye|goodbye)/.test(t)) return "👋 Goodbye! Have a great day ahead.";
+  return null; // No local match
+}
+
+// ======================
 // OpenAI GPT call
-async function callGptModel(userMessage) {
+// ======================
+async function callGptModel(userMessage, previousMessages) {
   if (!process.env.OPENAI_API_KEY) return "";
 
+  const prompt = `You are Ananya, the professional, friendly, and engaging digital assistant for SEOcial Media Solutions 💻✨.
+**Persona & Tone:** Warm, approachable, human-like, professional.
+**Knowledge Base:** Use https://seocialmedia.in/
+**Context:** Previous messages: ${previousMessages}
+Current message: ${userMessage}`;
+
   try {
-    const prompt = `
-You are Ananya, a friendly, professional assistant for SEOcial Media Solutions 💻✨.
-Speak like a real human: warm, clear, and conversational. Keep replies short.
-
-User message: ${userMessage}
-`;
-
     const response = await axios.post(
       "https://api.openai.com/v1/chat/completions",
       {
         model: "gpt-4",
         messages: [{ role: "user", content: prompt }],
-        max_tokens: 150,
+        max_tokens: 200,
       },
       {
         headers: {
@@ -54,7 +133,6 @@ User message: ${userMessage}
         },
       }
     );
-
     return response.data.choices[0].message.content;
   } catch (err) {
     console.error("❌ GPT Error:", err.message);
@@ -62,17 +140,17 @@ User message: ${userMessage}
   }
 }
 
+// ======================
 // Gemini Flash call
-async function callGeminiFlash(userMessage) {
+// ======================
+async function callGeminiFlash(userMessage, previousMessages) {
   try {
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
-    const prompt = `
-You are Ananya, the friendly and professional assistant for SEOcial Media Solutions 💻✨.
-Speak naturally and clearly. Keep replies short.
-
-User message: ${userMessage}
-`;
+    const prompt = `You are Ananya, the professional, friendly, and engaging digital assistant for SEOcial Media Solutions 💻✨.
+**Persona & Tone:** Warm, approachable, human-like, professional.
+**Knowledge Base:** Use https://seocialmedia.in/
+**Context:** Previous messages: ${previousMessages}
+Current message: ${userMessage}`;
 
     const result = await model.generateContent(prompt);
     return result.response?.text() || "";
