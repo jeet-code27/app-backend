@@ -3,6 +3,7 @@ const Service = require("../models/Service");
 const Category = require("../models/Category");
 const { validationResult } = require("express-validator");
 const cloudinary = require("cloudinary").v2;
+const mongoose = require("mongoose");
 
 // Configure Cloudinary
 cloudinary.config({
@@ -296,7 +297,6 @@ const getTemplateBySlug = async (req, res) => {
 // @access  Private (Admin)
 const createTemplate = async (req, res) => {
   try {
-    // Check validation errors
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({
@@ -310,33 +310,28 @@ const createTemplate = async (req, res) => {
       title,
       description,
       category,
-      service,
+      service, // this is the serviceId from frontend
       isActive,
       isFeatured,
       startingPrice,
     } = req.body;
 
-    // Verify category and service exist
+    // Validate category & service
     const [categoryExists, serviceExists] = await Promise.all([
       Category.findById(category),
       Service.findById(service),
     ]);
 
     if (!categoryExists) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid category ID",
-      });
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid category ID" });
     }
-
     if (!serviceExists) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid service ID",
-      });
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid service ID" });
     }
-
-    // Verify service belongs to selected category
     if (serviceExists.category.toString() !== category) {
       return res.status(400).json({
         success: false,
@@ -344,7 +339,7 @@ const createTemplate = async (req, res) => {
       });
     }
 
-    // Prepare template data
+    // Build template data
     const templateData = {
       title,
       description,
@@ -353,53 +348,41 @@ const createTemplate = async (req, res) => {
       isActive: isActive !== undefined ? isActive === "true" : true,
       isFeatured: isFeatured === "true",
       pricing: {
-        startingPrice: startingPrice !== undefined ? Number(startingPrice) : 0,
+        startingPrice: startingPrice ? Number(startingPrice) : 0,
       },
     };
 
-    // Handle main image upload
+    // Upload main image
     if (req.files?.mainImage?.[0]) {
-      try {
-        const mainImageResult = await uploadToCloudinary(
-          req.files.mainImage[0],
-          "templates/main"
-        );
-        templateData.mainImage = {
-          publicId: mainImageResult.publicId,
-          url: mainImageResult.url,
-          filename: mainImageResult.filename,
-          alt: title,
-        };
-      } catch (error) {
-        return res.status(500).json({
-          success: false,
-          message: "Error uploading main image",
-          error: error.message,
-        });
-      }
+      const mainImageResult = await uploadToCloudinary(
+        req.files.mainImage[0],
+        "templates/main"
+      );
+      templateData.mainImage = {
+        publicId: mainImageResult.publicId,
+        url: mainImageResult.url,
+        filename: mainImageResult.filename,
+        alt: title,
+      };
     }
 
-    // Handle additional images upload
+    // Upload gallery images
     if (req.files?.images) {
-      try {
-        const imagePromises = req.files.images.map((file) =>
-          uploadToCloudinary(file, "templates/gallery")
-        );
-        const uploadedImages = await Promise.all(imagePromises);
-        templateData.images = uploadedImages;
-      } catch (error) {
-        return res.status(500).json({
-          success: false,
-          message: "Error uploading images",
-          error: error.message,
-        });
-      }
+      const imagePromises = req.files.images.map((file) =>
+        uploadToCloudinary(file, "templates/gallery")
+      );
+      const uploadedImages = await Promise.all(imagePromises);
+      templateData.images = uploadedImages;
     }
 
-    const template = new Template(templateData);
-    await template.save();
+    // ✅ Save template
+    const template = await Template.create(templateData);
 
-    // Populate references for response
+    // ✅ Push template into related service
+
+    2;
+
+    // Populate refs for response
     await template.populate([
       { path: "category", select: "title slug" },
       { path: "service", select: "title slug" },
@@ -411,13 +394,6 @@ const createTemplate = async (req, res) => {
       data: template,
     });
   } catch (error) {
-    if (error.code === 11000) {
-      return res.status(400).json({
-        success: false,
-        message: "Template with this title already exists",
-      });
-    }
-
     res.status(500).json({
       success: false,
       message: "Error creating template",
@@ -431,23 +407,12 @@ const createTemplate = async (req, res) => {
 // @access  Private (Admin)
 const updateTemplate = async (req, res) => {
   try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({
-        success: false,
-        message: "Validation errors",
-        errors: errors.array(),
-      });
-    }
-
     const { id } = req.params;
     const template = await Template.findById(id);
-
     if (!template) {
-      return res.status(404).json({
-        success: false,
-        message: "Template not found",
-      });
+      return res
+        .status(404)
+        .json({ success: false, message: "Template not found" });
     }
 
     const {
@@ -460,35 +425,7 @@ const updateTemplate = async (req, res) => {
       isFeatured,
     } = req.body;
 
-    // Verify category and service if being updated
-    if (category && category !== template.category.toString()) {
-      const categoryExists = await Category.findById(category);
-      if (!categoryExists) {
-        return res.status(400).json({
-          success: false,
-          message: "Invalid category ID",
-        });
-      }
-    }
-
-    if (service && service !== template.service.toString()) {
-      const serviceExists = await Service.findById(service);
-      if (!serviceExists) {
-        return res.status(400).json({
-          success: false,
-          message: "Invalid service ID",
-        });
-      }
-
-      // Verify service belongs to category
-      const categoryToCheck = category || template.category;
-      if (serviceExists.category.toString() !== categoryToCheck.toString()) {
-        return res.status(400).json({
-          success: false,
-          message: "Service does not belong to selected category",
-        });
-      }
-    }
+    const oldServiceId = template.service?.toString();
 
     // Update fields
     template.title = title || template.title;
@@ -504,59 +441,43 @@ const updateTemplate = async (req, res) => {
       isActive !== undefined ? isActive === "true" : template.isActive;
     template.isFeatured = isFeatured === "true";
 
-    // Handle main image update
-    if (req.files?.mainImage?.[0]) {
-      try {
-        // Delete old main image if exists
-        if (template.mainImage?.publicId) {
-          await deleteFromCloudinary(template.mainImage.publicId);
-        }
-
-        const mainImageResult = await uploadToCloudinary(
-          req.files.mainImage[0],
-          "templates/main"
-        );
-        template.mainImage = {
-          publicId: mainImageResult.publicId,
-          url: mainImageResult.url,
-          filename: mainImageResult.filename,
-          alt: template.title,
-        };
-      } catch (error) {
-        return res.status(500).json({
-          success: false,
-          message: "Error uploading main image",
-          error: error.message,
-        });
-      }
-    }
-
-    // Handle additional images update
-    if (req.files?.images) {
-      try {
-        // Delete old images
-        if (template.images && template.images.length > 0) {
-          const deletePromises = template.images.map((img) =>
-            deleteFromCloudinary(img.publicId)
-          );
-          await Promise.all(deletePromises);
-        }
-
-        const imagePromises = req.files.images.map((file) =>
-          uploadToCloudinary(file, "templates/gallery")
-        );
-        const uploadedImages = await Promise.all(imagePromises);
-        template.images = uploadedImages;
-      } catch (error) {
-        return res.status(500).json({
-          success: false,
-          message: "Error uploading images",
-          error: error.message,
-        });
-      }
-    }
-
     await template.save();
+    console.log("✅ Template saved:", template._id);
+
+    // ✅ Sync Service.templates[]
+    if (service && service !== oldServiceId) {
+      // Remove from old service
+      if (oldServiceId) {
+        const oldUpdate = await Service.findByIdAndUpdate(
+          oldServiceId,
+          {
+            $pull: { templates: new mongoose.Types.ObjectId(template._id) }, // ✅ fixed
+          },
+          { new: true }
+        );
+        console.log(
+          `🗑️ Removed template ${template._id} from old service ${oldServiceId}`
+        );
+        console.log("Old service after update:", oldUpdate?.templates);
+      }
+      // Add to new service
+      const newUpdate = await Service.findByIdAndUpdate(
+        service,
+        {
+          $addToSet: { templates: new mongoose.Types.ObjectId(template._id) }, // ✅ fixed
+        },
+        { new: true }
+      );
+      console.log(
+        `➕ Added template ${template._id} to new service ${service}`
+      );
+      console.log("New service after update:", newUpdate);
+    } else {
+      console.log(
+        "ℹ️ Service not changed or not provided, skipping service sync."
+      );
+    }
+
     await template.populate([
       { path: "category", select: "title slug" },
       { path: "service", select: "title slug" },
@@ -568,13 +489,7 @@ const updateTemplate = async (req, res) => {
       data: template,
     });
   } catch (error) {
-    if (error.code === 11000) {
-      return res.status(400).json({
-        success: false,
-        message: "Template with this title already exists",
-      });
-    }
-
+    console.error("❌ Error updating template:", error);
     res.status(500).json({
       success: false,
       message: "Error updating template",
@@ -682,6 +597,22 @@ const deleteTemplate = async (req, res) => {
       await Promise.all(deletePromises);
     }
 
+    // 🗑️ Remove template reference from the related service
+    if (template.service) {
+      const serviceUpdate = await Service.findByIdAndUpdate(
+        template.service,
+        {
+          $pull: { templates: new mongoose.Types.ObjectId(template._id) },
+        },
+        { new: true }
+      );
+      console.log(
+        `🗑️ Removed template ${template._id} from service ${template.service}`
+      );
+      console.log("Updated service templates:", serviceUpdate?.templates);
+    }
+
+    // Delete the template itself
     await Template.findByIdAndDelete(id);
 
     res.status(200).json({
@@ -689,6 +620,7 @@ const deleteTemplate = async (req, res) => {
       message: "Template deleted successfully",
     });
   } catch (error) {
+    console.error("❌ Error deleting template:", error);
     res.status(500).json({
       success: false,
       message: "Error deleting template",
@@ -696,6 +628,7 @@ const deleteTemplate = async (req, res) => {
     });
   }
 };
+
 
 module.exports = {
   getAllTemplates,

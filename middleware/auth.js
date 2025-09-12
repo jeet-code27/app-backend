@@ -49,6 +49,35 @@ exports.protect = async (req, res, next) => {
     }
 };
 
+
+exports.adminOnly = async (req, res, next) => {
+  try {
+    // TEMPORARY: For now, any authenticated user can access admin routes
+    // In production, replace this with proper admin role checking
+    
+    // Option 1: Allow any authenticated user (for testing)
+    next();
+    
+    // Option 2: Use specific email addresses as admins (uncomment below)
+    /*
+    const adminEmails = ['admin@example.com', 'youremail@gmail.com']; // Add your email here
+    if (!adminEmails.includes(req.user.email)) {
+      return res.status(403).json({
+        success: false,
+        message: 'Access denied. Admin privileges required.'
+      });
+    }
+    next();
+    */
+    
+  } catch (error) {
+    res.status(401).json({
+      success: false,
+      message: 'Not authorized to access this route.'
+    });
+  }
+};
+
 // utils/email.js (Updated)
 const nodemailer = require('nodemailer');
 
@@ -76,3 +105,5 @@ exports.sendEmail = async (to, subject, html) => {
         throw error;
     }
 };
+
+

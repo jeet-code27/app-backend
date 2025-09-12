@@ -1,4 +1,3 @@
-// models/User.js
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
@@ -35,6 +34,26 @@ const userSchema = new mongoose.Schema({
     },
     resetPasswordExpires: {
         type: Date
+    },
+    // 🆕 Facebook Integration Data
+    facebookData: {
+        userAccessToken: {
+            type: String,
+            default: null
+        },
+        pages: [{
+            id: String,
+            name: String,
+            access_token: String,
+            category: String,
+            tasks: [String],
+            fan_count: Number,
+            followers_count: Number
+        }],
+        connectedAt: {
+            type: Date,
+            default: null
+        }
     }
 }, { timestamps: true });
 
@@ -60,8 +79,31 @@ userSchema.methods.createPasswordResetToken = function() {
         .createHash('sha256')
         .update(resetToken)
         .digest('hex');
-    this.resetPasswordExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+    this.resetPasswordExpires = Date.now() + 10 * 60 * 1000; 
     return resetToken;
+};
+
+// 🆕 Check if user has Facebook connected
+userSchema.methods.hasFacebookConnected = function() {
+    return !!(this.facebookData && this.facebookData.userAccessToken);
+};
+
+// 🆕 Get Facebook page by ID
+userSchema.methods.getFacebookPage = function(pageId) {
+    if (!this.facebookData || !this.facebookData.pages) {
+        return null;
+    }
+    return this.facebookData.pages.find(page => page.id === pageId);
+};
+
+// 🆕 Remove Facebook connection
+userSchema.methods.removeFacebookConnection = function() {
+    this.facebookData = {
+        userAccessToken: null,
+        pages: [],
+        connectedAt: null
+    };
+    return this.save();
 };
 
 module.exports = mongoose.model('User', userSchema);

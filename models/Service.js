@@ -87,6 +87,10 @@ const serviceSchema = new mongoose.Schema({
       default: 'days'
     }
   },
+ templates: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Template'
+  }],
   isActive: {
     type: Boolean,
     default: true

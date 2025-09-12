@@ -15,8 +15,11 @@ const templateRoutes = require("./routes/templateRoutes");
 const comboRoutes = require("./routes/comboRoutes");
 const authRoutes = require("./routes/authRoutes");
 const ai = require("./routes/chatRoutes");
-// Service request routes
 const serviceRequestRoutes = require("./routes/serviceRequestRoutes");
+// 🆕 Facebook routes
+const facebookRoutes = require("./routes/facebookRoutes");
+const creativeRoutes = require("./routes/creatives");
+
 // Security middleware
 app.use(helmet());
 
@@ -35,6 +38,7 @@ app.use(cors({}));
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(bodyParser.json());
+
 // Static files middleware for uploaded images
 app.use("/uploads", express.static("uploads"));
 
@@ -60,6 +64,10 @@ app.use("/api/combos", comboRoutes);
 app.use("/api/service-requests", serviceRequestRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/chat", ai);
+// 🆕 Facebook integration routes
+app.use("/api/facebook", facebookRoutes);
+app.use("/api/creatives", creativeRoutes);
+
 // Health check endpoint
 app.get("/api/health", (req, res) => {
   res.status(200).json({
@@ -77,7 +85,9 @@ app.get("/", (req, res) => {
     endpoints: {
       categories: "/api/categories",
       services: "/api/services",
+      facebook: "/api/facebook", // 🆕 Added Facebook endpoint
       health: "/api/health",
+       creatives: "/api/creatives", 
     },
   });
 });
@@ -107,11 +117,13 @@ app.listen(PORT, () => {
   console.log(`📍 API Base URL: http://localhost:${PORT}/api`);
   console.log(`📂 Categories API: http://localhost:${PORT}/api/categories`);
   console.log(`🛍️ Services API: http://localhost:${PORT}/api/services`);
-  console.log(`🛍️ Services API: http://localhost:${PORT}/api/templates`);
-  console.log(`🛍️ Services API: http://localhost:${PORT}/api/combos`);
-  console.log(`🛍️ Services API: http://localhost:${PORT}/api/service-requests`);
-  console.log(`🛍️ Services API: http://localhost:${PORT}/api/careers`);
-  console.log(`🚀 Virtual Assistant running at http://localhost:${PORT}/api/chat`);
+  console.log(`🛍️ Templates API: http://localhost:${PORT}/api/templates`);
+  console.log(`🛍️ Combos API: http://localhost:${PORT}/api/combos`);
+  console.log(`🛍️ Service Requests API: http://localhost:${PORT}/api/service-requests`);
+  console.log(`🛍️ Auth API: http://localhost:${PORT}/api/auth`);
+  console.log(`🚀 Virtual Assistant: http://localhost:${PORT}/api/chat`);
+  // 🆕 Facebook API endpoint
+  console.log(`📘 Facebook API: http://localhost:${PORT}/api/facebook`);
 });
 
 module.exports = app;
