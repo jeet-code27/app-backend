@@ -1,4 +1,5 @@
 const ServiceRequest = require("../models/ServiceRequest");
+const User = require("../models/User");
 const Category = require("../models/Category");
 const Service = require("../models/Service");
 const Template = require("../models/Template");
@@ -44,6 +45,25 @@ const serviceRequestController = {
 
       // Populate works without importing the models explicitly
       // Mongoose uses the 'ref' property from the schema
+      try {
+        const user = await User.findById(clientInfo.user.id);
+        if (user) {
+          // Ensure arrays exist
+          user.requests = user.requests || [];
+          user.requestIds = user.requestIds || [];
+
+          // Push ObjectId reference
+          user.requests.push(newRequest._id);
+
+          // Push requestId string
+          user.requestIds.push(newRequest.requestId);
+
+          await user.save();
+        }
+      } catch (err) {
+        console.error("User update error:", err);
+      }
+
       await newRequest.populate([
         { path: "selectionPath.selectedCategory", select: "title slug" },
         { path: "selectionPath.selectedService", select: "title slug" },
@@ -469,7 +489,6 @@ const serviceRequestController = {
   getDashboardStats: async (req, res) => {
     try {
       const stats = await Promise.all([
-        
         ServiceRequest.countDocuments({ status: "submitted" }), // 0
         ServiceRequest.countDocuments({ status: "in-progress" }), // 1
         ServiceRequest.countDocuments({ status: "completed" }), // 2

@@ -70,8 +70,6 @@ router.get(
 // Get single request by ID (detailed view)
 router.get("/admin/:id", isAdmin, serviceRequestController.getRequestById);
 
-
-
 // Update request status
 router.put(
   "/admin/:id/status",
@@ -100,7 +98,11 @@ router.put(
 router.delete("/admin/:id", isAdmin, serviceRequestController.deleteRequest);
 
 // Send custom email to client
-router.post("/admin/:id/send-email", isAdmin, serviceRequestController.sendCustomEmailByAdmin);
+router.post(
+  "/admin/:id/send-email",
+  isAdmin,
+  serviceRequestController.sendCustomEmailByAdmin
+);
 
 // =================
 // ADDITIONAL UTILITY ROUTES
