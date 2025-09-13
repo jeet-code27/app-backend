@@ -45,6 +45,7 @@ const serviceRequestController = {
 
       // Populate works without importing the models explicitly
       // Mongoose uses the 'ref' property from the schema
+      console.log(clientInfo.user)
       try {
         const user = await User.findById(clientInfo.user.id);
         if (user) {
@@ -59,6 +60,7 @@ const serviceRequestController = {
           user.requestIds.push(newRequest.requestId);
 
           await user.save();
+          console.log('id are save');
         }
       } catch (err) {
         console.error("User update error:", err);
