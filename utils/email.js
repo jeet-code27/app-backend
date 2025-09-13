@@ -4,8 +4,8 @@ const nodemailer = require("nodemailer");
 const createTransporter = () => {
   return  nodemailer.createTransport({
   host: "smtp.gmail.com",  // or smtp.sendgrid.net, smtp.mailgun.org, etc.
-  port: 587,               // use 465 if you want SSL
-  secure: false,           // true if using port 465
+  port: 465,               // use 465 if you want SSL
+  secure: true,           // true if using port 465
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
