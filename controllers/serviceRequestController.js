@@ -45,9 +45,9 @@ const serviceRequestController = {
 
       // Populate works without importing the models explicitly
       // Mongoose uses the 'ref' property from the schema
-      console.log(clientInfo.user.id)
+      console.log(clientInfo.user)
       try {
-        const user = await User.findById(clientInfo.user.id);
+        const user = await User.findById(clientInfo.user);
         if (user) {
           // Ensure arrays exist
           user.requests = user.requests || [];
