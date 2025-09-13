@@ -44,6 +44,7 @@ router.post(
 );
 
 // Get request status by requestId (for client tracking)
+router.get("/userRequest/:requestId",serviceRequestController.getUserRequestIds);
 router.get("/track/:requestId", serviceRequestController.getRequestByRequestId);
 
 // =================

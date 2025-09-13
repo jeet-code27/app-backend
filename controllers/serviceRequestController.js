@@ -1,9 +1,6 @@
 const ServiceRequest = require("../models/ServiceRequest");
 const User = require("../models/User");
-const Category = require("../models/Category");
-const Service = require("../models/Service");
-const Template = require("../models/Template");
-const Combo = require("../models/Combo");
+
 const {
   sendStatusUpdateEmail,
   sendCustomAdminEmail,
@@ -45,7 +42,7 @@ const serviceRequestController = {
 
       // Populate works without importing the models explicitly
       // Mongoose uses the 'ref' property from the schema
-      console.log(clientInfo.user)
+      console.log(clientInfo.user);
       try {
         const user = await User.findById(clientInfo.user);
         if (user) {
@@ -60,7 +57,7 @@ const serviceRequestController = {
           user.requestIds.push(newRequest.requestId);
 
           await user.save();
-          console.log('id are save');
+          console.log("id are save");
         }
       } catch (err) {
         console.error("User update error:", err);
@@ -83,6 +80,36 @@ const serviceRequestController = {
       res.status(500).json({
         success: false,
         message: "Failed to submit service request",
+        error: error.message,
+      });
+    }
+  },
+  // GET - Get all service request IDs from user document
+  // GET - Get all service request IDs for the logged-in user
+  getUserRequestIds: async (req, res) => {
+    const { requestId } = req.params;
+    try {
+      const user = await User.findById(requestId).select("requests requestIds");
+
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: "User not found",
+        });
+      }
+
+      res.status(200).json({
+        success: true,
+        data: {
+          requestObjectIds: user.requests, // MongoDB ObjectIds
+          requestIds: user.requestIds, // Custom requestId strings
+        },
+      });
+    } catch (error) {
+      console.error("Get User Request IDs Error:", error);
+      res.status(500).json({
+        success: false,
+        message: "Failed to fetch user request IDs",
         error: error.message,
       });
     }

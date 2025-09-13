@@ -62,7 +62,7 @@ exports.sendOtp = async (req, res) => {
       user = new User({
         email,
         name,
-        password: "tempPassword", // Will be set during verification
+        password, // Will be set during verification
       });
     }
 
@@ -111,6 +111,7 @@ exports.verifyOtpAndRegister = async (req, res) => {
       return res.status(400).json({
         success: false,
         message: "Password must be at least 6 characters long.",
+        
       });
     }
 
