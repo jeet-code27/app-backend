@@ -2,17 +2,23 @@ const nodemailer = require("nodemailer");
 
 // Create transporter with your email service credentials
 const createTransporter = () => {
-  return  nodemailer.createTransport({
-  host: "smtp.gmail.com",  // or smtp.sendgrid.net, smtp.mailgun.org, etc.
-  port: 587,               // use 465 if you want SSL
-  secure: false,           // true if using port 465
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-});
+  return nodemailer.createTransport({
+    // For Gmail
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL_USER, // Your email
+      pass: process.env.EMAIL_PASS, // Your app password
+    },
 
-   
+    // Alternative SMTP configuration
+    // host: process.env.SMTP_HOST,
+    // port: process.env.SMTP_PORT,
+    // secure: true, // true for 465, false for other ports
+    // auth: {
+    //   user: process.env.EMAIL_USER,
+    //   pass: process.env.EMAIL_PASS
+    // }
+  });
 };
 
 // Function for Admin to send a custom email
